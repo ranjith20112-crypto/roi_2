@@ -1682,16 +1682,227 @@
       // ==========================================
 // COMPLETE HR ROI CALCULATOR JAVASCRIPT
 // Send Lead + ROI Data on Form Submit
-// ==========================================
-// ==========================================
-// COMPLETE HR ROI CALCULATOR JAVASCRIPT
-// Send Lead + ROI Data on Form Submit
+
 // ==========================================
 
 // REPLACE WITH YOUR GOOGLE SHEETS SCRIPT URL
 const scriptURL =
       'https://script.google.com/macros/s/AKfycbxg31QX3k5K6Y1LAqSuTRP3nAB-8xsgVOyNr3N6Dp1u_OBlYhnF4-U28Mv3UAbD5z4png/exec';
+// ==========================================
+// JAVASCRIPT - Website Frontend
+// Put this in your HTML file
+// ==========================================
+
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxFEwH8whPo3f8QFBUpAGNpkG3PaOa_KelhAs59rD_j86ry-pvCIs4h14zCpdimWXVl/exec';
+
+const currencies = {
+    'INR': { symbol: '₹', prefix: '₹', costMin: 15000, costMax: 600000, costDefault: 120000, costStep: 1000, screeningMin: 800, screeningMax: 10000, screeningDefault: 2500, screeningStep: 100, badHireCost: 450000 },
+    'USD': { symbol: '$', prefix: '$', costMin: 500, costMax: 20000, costDefault: 4000, costStep: 100, screeningMin: 25, screeningMax: 300, screeningDefault: 75, screeningStep: 5, badHireCost: 15000 },
+    'AED': { symbol: 'AED', prefix: 'AED', costMin: 2000, costMax: 75000, costDefault: 15000, costStep: 500, screeningMin: 100, screeningMax: 1100, screeningDefault: 275, screeningStep: 25, badHireCost: 55000 },
+    'AUD': { symbol: 'A$', prefix: 'A$', costMin: 800, costMax: 30000, costDefault: 6000, costStep: 100, screeningMin: 40, screeningMax: 450, screeningDefault: 110, screeningStep: 5, badHireCost: 22000 },
+    'SGD': { symbol: 'S$', prefix: 'S$', costMin: 700, costMax: 28000, costDefault: 5500, costStep: 100, screeningMin: 35, screeningMax: 400, screeningDefault: 100, screeningStep: 5, badHireCost: 20000 }
+};
+
 let currentCurrency = 'INR';
+let leadModal;
+let calculationResults = {};
+let leadData = {};
+let userEmail = null;
+let roiAlreadySent = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    leadModal = new bootstrap.Modal(document.getElementById('leadModal'));
+    setupListeners();
+    setCurrency('INR');
+});
+
+function setupListeners() {
+    ['annualHires', 'costPerHire', 'badHireRate', 'screeningCost', 'reductionRate'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', () => {
+            const map = { 'annualHires': 'hires', 'costPerHire': 'cost', 'badHireRate': 'badRate', 'screeningCost': 'screening', 'reductionRate': 'reduction' };
+            updateSlider(map[id]);
+        });
+    });
+    
+    window.addEventListener('scroll', () => {
+        document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50);
+    });
+}
+
+function setCurrency(currency) {
+    currentCurrency = currency;
+    const c = currencies[currency];
+    
+    document.querySelectorAll('.currency-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.currency === currency);
+    });
+    
+    document.getElementById('costPrefix').textContent = c.prefix;
+    document.getElementById('screeningPrefix').textContent = c.prefix;
+    
+    document.getElementById('costPerHire').value = c.costDefault;
+    const cs = document.getElementById('costSlider');
+    [cs.min, cs.max, cs.step, cs.value] = [c.costMin, c.costMax, c.costStep, c.costDefault];
+    
+    document.getElementById('screeningCost').value = c.screeningDefault;
+    const ss = document.getElementById('screeningSlider');
+    [ss.min, ss.max, ss.step, ss.value] = [c.screeningMin, c.screeningMax, c.screeningStep, c.screeningDefault];
+    
+    const fmt = n => currency === 'INR' && n >= 1000 ? c.prefix + (n/1000) + 'k' : c.prefix + n;
+    document.getElementById('costMin').textContent = fmt(c.costMin);
+    document.getElementById('costMax').textContent = fmt(c.costMax);
+    document.getElementById('screeningMin').textContent = c.prefix + c.screeningMin;
+    document.getElementById('screeningMax').textContent = c.prefix + c.screeningMax;
+}
+
+function updateSlider(type) {
+    const map = { 'hires': ['annualHires', 'hiresSlider'], 'cost': ['costPerHire', 'costSlider'], 'badRate': ['badHireRate', 'badRateSlider'], 'screening': ['screeningCost', 'screeningSlider'], 'reduction': ['reductionRate', 'reductionSlider'] };
+    document.getElementById(map[type][1]).value = document.getElementById(map[type][0]).value;
+}
+
+function updateInput(type) {
+    const map = { 'hires': ['annualHires', 'hiresSlider'], 'cost': ['costPerHire', 'costSlider'], 'badRate': ['badHireRate', 'badRateSlider'], 'screening': ['screeningCost', 'screeningSlider'], 'reduction': ['reductionRate', 'reductionSlider'] };
+    document.getElementById(map[type][0]).value = document.getElementById(map[type][1]).value;
+}
+
+function calculateROI() {
+    const ah = parseInt(document.getElementById('annualHires').value) || 0;
+    const cph = parseInt(document.getElementById('costPerHire').value) || 0;
+    const bhr = parseInt(document.getElementById('badHireRate').value) || 0;
+    const sc = parseInt(document.getElementById('screeningCost').value) || 0;
+    const rr = parseInt(document.getElementById('reductionRate').value) || 0;
+    const cfg = currencies[currentCurrency];
+    
+    const cbh = Math.round(ah * (bhr / 100));
+    const bhp = Math.round(cbh * (rr / 100));
+    const cbhc = cbh * cfg.badHireCost;
+    const ca = bhp * cfg.badHireCost;
+    const si = ah * sc;
+    const ts = bhp * 40;
+    const tv = Math.round(ts * (cph / 200));
+    const ns = ca + tv - si;
+    const roi = si > 0 ? Math.round((ns / si) * 100) : 0;
+    
+    return { annualHires: ah, costPerHire: cph, badHireRate: bhr, screeningCost: sc, reductionRate: rr, currentBadHires: cbh, badHiresPrevented: bhp, currentBadHireCost: cbhc, costAvoided: ca, screeningInvestment: si, timeSaved: ts, timeValue: tv, totalSavings: ns, netSavings: ns, roiPercentage: roi, currency: currentCurrency };
+}
+
+function formatCurrency(amt) {
+    const c = currencies[currentCurrency];
+    const a = Math.abs(amt);
+    if (currentCurrency === 'INR') {
+        if (a >= 10000000) return c.symbol + (a/10000000).toFixed(2) + ' Cr';
+        if (a >= 100000) return c.symbol + (a/100000).toFixed(2) + ' L';
+        if (a >= 1000) return c.symbol + (a/1000).toFixed(1) + 'k';
+    } else {
+        if (a >= 1000000) return c.symbol + (a/1000000).toFixed(1) + 'M';
+        if (a >= 1000) return c.symbol + (a/1000).toFixed(1) + 'k';
+    }
+    return c.symbol + a.toLocaleString();
+}
+
+function formatFull(amt) {
+    return currencies[currentCurrency].symbol + Number(amt).toLocaleString();
+}
+
+function showLoading() {
+    document.getElementById('loadingOverlay').classList.add('show');
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+function openLeadModal() {
+    leadModal.show();
+}
+
+// ==========================================
+// STEP 1: LEAD FORM SUBMIT → SEND LEAD ONLY
+// ==========================================
+
+function submitLead(e) {
+    e.preventDefault();
+    
+    leadData = {
+        firstName: document.getElementById('leadFirstName').value.trim(),
+        lastName: document.getElementById('leadLastName').value.trim(),
+        email: document.getElementById('leadEmail').value.trim(),
+        phone: document.getElementById('leadPhone').value.trim(),
+        company: document.getElementById('leadCompany').value.trim(),
+        companySize: document.getElementById('leadCompanySize').value,
+        country: document.getElementById('leadCountry').value
+    };
+    
+    // Validate
+    const req = ['leadFirstName', 'leadLastName', 'leadEmail', 'leadPhone', 'leadCompany', 'leadCompanySize', 'leadCountry'];
+    for (let id of req) {
+        if (!document.getElementById(id).value.trim()) {
+            alert('Please fill all required fields');
+            return;
+        }
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(leadData.email)) {
+        alert('Please enter valid email');
+        return;
+    }
+    
+    calculationResults = calculateROI();
+    userEmail = leadData.email;
+    
+    const btn = document.querySelector('.btn-submit-lead');
+    btn.disabled = true;
+    leadModal.hide();
+    showLoading();
+    
+    // Send LEAD ONLY (step 1)
+    const step1Data = {
+        step: "lead",
+        timestamp: new Date().toISOString(),
+        email: leadData.email,
+        firstName: leadData.firstName,
+        lastName: leadData.lastName,
+        phone: leadData.phone,
+        company: leadData.company,
+        companySize: leadData.companySize,
+        country: leadData.country,
+        currency: currentCurrency,
+        annualHires: calculationResults.annualHires,
+        costPerHire: calculationResults.costPerHire,
+        badHireRate: calculationResults.badHireRate,
+        screeningCost: calculationResults.screeningCost,
+        reductionRate: calculationResults.reductionRate,
+        // ROI fields EMPTY
+        currentBadHires: "",
+        badHiresPrevented: "",
+        currentBadHireCost: "",
+        costAvoided: "",
+        screeningInvestment: "",
+        timeSaved: "",
+        timeValue: "",
+        totalSavings: "",
+        netSavings: "",
+        roiPercentage: "",
+        pdfDownloaded: "No"
+    };
+    
+    console.log("STEP 1 - Lead:", step1Data);
+    
+    fetch(scriptURL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(step1Data)
+    }).then(() => {
+        setTimeout(() => {
+            hideLoading();
+            showResults();
+            document.getElementById('leadForm').style.display = 'none';
+            document.getElementById('leadSuccessState').classList.add('show');
+            btn.disabled = false;
+        }, 2000);
+    }).catch(err => {
+        console.error(err);let currentCurrency = 'INR';
 let leadModal;
 let calculationResults = {};
 let leadData = {};
@@ -1733,359 +1944,189 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     window.addEventListener('scroll', function() {
-        const navbar = document.querySelector('.navbar');
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
+
+        hideLoading();
+        showResults();
+        btn.disabled = false;
     });
-});
-
-function setCurrency(currency) {
-    currentCurrency = currency;
-    const config = currencies[currency];
-    
-    document.querySelectorAll('.currency-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.currency === currency) btn.classList.add('active');
-    });
-    
-    document.getElementById('costPrefix').textContent = config.prefix;
-    document.getElementById('screeningPrefix').textContent = config.prefix;
-    
-    document.getElementById('costPerHire').value = config.costDefault;
-    document.getElementById('costSlider').min = config.costMin;
-    document.getElementById('costSlider').max = config.costMax;
-    document.getElementById('costSlider').step = config.costStep;
-    document.getElementById('costSlider').value = config.costDefault;
-    
-    document.getElementById('screeningCost').value = config.screeningDefault;
-    document.getElementById('screeningSlider').min = config.screeningMin;
-    document.getElementById('screeningSlider').max = config.screeningMax;
-    document.getElementById('screeningSlider').step = config.screeningStep;
-    document.getElementById('screeningSlider').value = config.screeningDefault;
-    
-    const formatCompact = (num) => {
-        if (currentCurrency === 'INR' && num >= 1000) {
-            return config.prefix + (num / 1000) + 'k';
-        }
-        return config.prefix + num;
-    };
-    
-    document.getElementById('costMin').textContent = formatCompact(config.costMin);
-    document.getElementById('costMax').textContent = formatCompact(config.costMax);
-    document.getElementById('screeningMin').textContent = config.prefix + config.screeningMin;
-    document.getElementById('screeningMax').textContent = config.prefix + config.screeningMax;
 }
 
-function updateSlider(type) {
-    const map = {
-        'hires': { input: 'annualHires', slider: 'hiresSlider' },
-        'cost': { input: 'costPerHire', slider: 'costSlider' },
-        'badRate': { input: 'badHireRate', slider: 'badRateSlider' },
-        'screening': { input: 'screeningCost', slider: 'screeningSlider' },
-        'reduction': { input: 'reductionRate', slider: 'reductionSlider' }
-    };
+// ==========================================
+// STEP 2: PDF DOWNLOAD → SEND ROI ONLY
+// ==========================================
+
+function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    if (!jsPDF) return alert('PDF library not loaded');
     
-    const m = map[type];
-    if (m) {
-        document.getElementById(m.slider).value = document.getElementById(m.input).value;
+    // Create PDF
+    createPDF();
+    
+    // Send ROI data (only once)
+    if (!roiAlreadySent && userEmail) {
+        sendROI();
     }
 }
 
-function updateInput(type) {
-    const map = {
-        'hires': { input: 'annualHires', slider: 'hiresSlider' },
-        'cost': { input: 'costPerHire', slider: 'costSlider' },
-        'badRate': { input: 'badHireRate', slider: 'badRateSlider' },
-        'screening': { input: 'screeningCost', slider: 'screeningSlider' },
-        'reduction': { input: 'reductionRate', slider: 'reductionSlider' }
+function sendROI() {
+    const step2Data = {
+        step: "roi",
+        timestamp: new Date().toISOString(),
+        email: userEmail,
+        // ROI results ONLY
+        currentBadHires: calculationResults.currentBadHires,
+        badHiresPrevented: calculationResults.badHiresPrevented,
+        currentBadHireCost: calculationResults.currentBadHireCost,
+        costAvoided: calculationResults.costAvoided,
+        screeningInvestment: calculationResults.screeningInvestment,
+        timeSaved: calculationResults.timeSaved,
+        timeValue: calculationResults.timeValue,
+        totalSavings: calculationResults.totalSavings,
+        netSavings: calculationResults.netSavings,
+        roiPercentage: calculationResults.roiPercentage,
+        pdfDownloaded: "Yes"
     };
     
-    const m = map[type];
-    if (m) {
-        document.getElementById(m.input).value = document.getElementById(m.slider).value;
-    }
-}
-
-function calculateROI() {
-    const annualHires = parseInt(document.getElementById('annualHires').value) || 0;
-    const costPerHire = parseInt(document.getElementById('costPerHire').value) || 0;
-    const badHireRate = parseInt(document.getElementById('badHireRate').value) || 0;
-    const screeningCost = parseInt(document.getElementById('screeningCost').value) || 0;
-    const reductionRate = parseInt(document.getElementById('reductionRate').value) || 0;
+    console.log("STEP 2 - ROI:", step2Data);
     
-    const config = currencies[currentCurrency];
-    
-    const currentBadHires = Math.round(annualHires * (badHireRate / 100));
-    const badHiresPrevented = Math.round(currentBadHires * (reductionRate / 100));
-    const costPerBadHire = config.badHireCost;
-    const currentBadHireCost = currentBadHires * costPerBadHire;
-    const costAvoided = badHiresPrevented * costPerBadHire;
-    const screeningInvestment = annualHires * screeningCost;
-    const timeSaved = badHiresPrevented * 40;
-    const timeValue = timeSaved * (costPerHire / 200);
-    const totalSavings = costAvoided + timeValue - screeningInvestment;
-    const netSavings = totalSavings;
-    const roiPercentage = screeningInvestment > 0 ? Math.round((netSavings / screeningInvestment) * 100) : 0;
-    
-    return {
-        annualHires, costPerHire, badHireRate, screeningCost, reductionRate,
-        currentBadHires, badHiresPrevented, currentBadHireCost, costAvoided,
-        screeningInvestment, timeSaved, timeValue, totalSavings, netSavings, roiPercentage,
-        currency: currentCurrency, currencySymbol: config.symbol
-    };
-}
-
-function formatCurrency(amount) {
-    const config = currencies[currentCurrency];
-    if (currentCurrency === 'INR') {
-        if (amount >= 10000000) return config.symbol + (amount / 10000000).toFixed(2) + ' Cr';
-        if (amount >= 100000) return config.symbol + (amount / 100000).toFixed(2) + ' L';
-        if (amount >= 1000) return config.symbol + (amount / 1000).toFixed(1) + 'k';
-    } else {
-        if (amount >= 1000000) return config.symbol + (amount / 1000000).toFixed(1) + 'M';
-        if (amount >= 1000) return config.symbol + (amount / 1000).toFixed(1) + 'k';
-    }
-    return config.symbol + amount.toLocaleString();
-}
-
-function formatCurrencyFull(amount) {
-    return currencies[currentCurrency].symbol + amount.toLocaleString();
-}
-
-function showLoading() {
-    const overlay = document.getElementById('loadingOverlay');
-    const textEl = document.getElementById('loadingText');
-    const subtextEl = document.getElementById('loadingSubtext');
-    
-    overlay.classList.add('show');
-    
-    let messageIndex = 0;
-    loadingInterval = setInterval(() => {
-        messageIndex = (messageIndex + 1) % loadingMessages.length;
-        textEl.textContent = loadingMessages[messageIndex].text;
-        subtextEl.textContent = loadingMessages[messageIndex].subtext;
-    }, 1500);
-}
-
-function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('show');
-    clearInterval(loadingInterval);
-}
-
-function openLeadModal() {
-    leadModal.show();
-}
-
-// ==========================================
-// LEAD SUBMISSION - USER DETAILS ONLY
-// ==========================================
-
-// ==========================================
-// submitLead function - REMOVE response.json()
-// ==========================================
-
-function submitLead(event) {
-    event.preventDefault();
-    
-    leadData = {
-        firstName: document.getElementById('leadFirstName').value.trim(),
-        lastName: document.getElementById('leadLastName').value.trim(),
-        email: document.getElementById('leadEmail').value.trim().toLowerCase(), // FORCE LOWERCASE
-        phone: document.getElementById('leadPhone').value.trim(),
-        company: document.getElementById('leadCompany').value.trim(),
-        companySize: document.getElementById('leadCompanySize').value,
-        country: document.getElementById('leadCountry').value
-    };
-    
-    // Validation...
-    
-    calculationResults = calculateROI();
-    
-    const btn = document.querySelector('.btn-submit-lead');
-    btn.disabled = true;
-    leadModal.hide();
-    showLoading();
-    
-    const sheetData = {
-        action: 'lead',
-        firstName: leadData.firstName,
-        lastName: leadData.lastName,
-        email: leadData.email, // Already lowercase
-        phone: leadData.phone,
-        company: leadData.company,
-        companySize: leadData.companySize,
-        country: leadData.country,
-        currency: currentCurrency
-    };
-    
-    console.log('Sending lead data:', sheetData);
-    
-    // FIX: Don't try to read response with no-cors
     fetch(scriptURL, {
         method: "POST",
-        mode: 'no-cors',  // This makes response opaque (unreadable)
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(sheetData)
-    })
-    .then(() => {
-        // With no-cors, we assume success if no network error
-        console.log('Lead data sent (assumed success)');
-        
-        // Wait 2 seconds for sheet to update, then send ROI
-        setTimeout(() => {
-            hideLoading();
-            showResults();
-            showSuccessState();
-            btn.disabled = false;
-            
-            // Send ROI data immediately after
-            updateSheetWithROI();
-        }, 2000);
-    })
-    .catch(error => {
-        console.error("Network error:", error);
-        hideLoading();
-        btn.disabled = false;
-        showResults();
-        showSuccessState();
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(step2Data)
+    }).then(() => {
+        console.log("ROI saved");
+        roiAlreadySent = true;
+    }).catch(err => {
+        console.error("Error:", err);
     });
 }
 
-// ==========================================
-// New function to send ROI data separately
-// ==========================================
-
-function updateSheetWithROI() {
+function createPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
     const r = calculationResults;
     
-    const roiData = {
-        action: 'pdfDownload',
-        email: leadData.email, // Already lowercase from leadData
-        annualHires: r.annualHires,
-        costPerHire: r.costPerHire,
-        badHireRate: r.badHireRate,
-        screeningCost: r.screeningCost,
-        reductionRate: r.reductionRate,
-        currentBadHires: r.currentBadHires,
-        badHiresPrevented: r.badHiresPrevented,
-        currentBadHireCost: r.currentBadHireCost,
-        costAvoided: r.costAvoided,
-        screeningInvestment: r.screeningInvestment,
-        timeSaved: r.timeSaved,
-        timeValue: r.timeValue,
-        totalSavings: r.totalSavings,
-        netSavings: r.netSavings,
-        roiPercentage: r.roiPercentage
-    };
+    doc.setFillColor(26, 194, 193);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('HR ROI CALCULATOR REPORT', 105, 25, { align: 'center' });
     
-    console.log('Sending ROI data:', roiData);
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(12);
+    doc.text(`Generated for: ${leadData.company || 'Your Company'}`, 20, 55);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 62);
+    doc.text(`Currency: ${currentCurrency}`, 20, 69);
     
-    // FIX: Remove response.json() here too
-    fetch(scriptURL, {
-        method: "POST",
-        mode: 'no-cors',
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(roiData)
-    })
-    .then(() => {
-        console.log('ROI data sent (assumed success)');
-    })
-    .catch(error => {
-        console.error('Error sending ROI data:', error);
+    doc.setFillColor(240, 253, 244);
+    doc.setDrawColor(16, 185, 129);
+    doc.roundedRect(15, 80, 180, 50, 3, 3, 'FD');
+    doc.setTextColor(16, 185, 129);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('EXECUTIVE SUMMARY', 25, 95);
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(11);
+    doc.text(`Total Annual Savings: ${formatFull(r.netSavings)}`, 25, 108);
+    doc.text(`ROI: ${r.roiPercentage}%`, 25, 116);
+    doc.text(`Bad Hires Prevented: ${r.badHiresPrevented}`, 25, 124);
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INPUT PARAMETERS', 20, 145);
+    
+    doc.autoTable({
+        startY: 150,
+        head: [['Parameter', 'Value']],
+        body: [
+            ['Annual Hires', r.annualHires.toString()],
+            ['Cost Per Hire', formatFull(r.costPerHire)],
+            ['Bad Hire Rate', r.badHireRate + '%'],
+            ['Screening Cost', formatFull(r.screeningCost)],
+            ['Expected Reduction', r.reductionRate + '%']
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [26, 194, 193], textColor: 255 },
+        styles: { fontSize: 10 }
     });
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CALCULATED RESULTS', 20, doc.lastAutoTable.finalY + 15);
+    
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 20,
+        head: [['Metric', 'Amount']],
+        body: [
+            ['Current Bad Hire Cost', formatFull(r.currentBadHireCost)],
+            ['Screening Investment', formatFull(r.screeningInvestment)],
+            ['Costs Avoided', formatFull(r.costAvoided)],
+            ['Time Saved', r.timeSaved + ' hours'],
+            ['Net Savings', formatFull(r.netSavings)]
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [245, 158, 11], textColor: 255 },
+        styles: { fontSize: 10 }
+    });
+    
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 280, 210, 17, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.text('Verifitech - Trust Simplified', 105, 290, { align: 'center' });
+    
+    doc.save(`ROI_Report_${(leadData.company || 'Company').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
-// ==========================================
-// downloadPDF function - REMOVE response.json()
-// ==========================================
-
-async function downloadPDF() {
-    const { jsPDF } = window.jspdf;
-    if (!jsPDF) {
-        alert('PDF library not loaded');
-        return;
-    }
+function showResults() {
+    const r = calculationResults;
     
-    if (!leadData || !leadData.email) {
-        alert('Error: Please submit the lead form first');
-        return;
-    }
+    document.getElementById('step1Card').classList.remove('active');
+    document.getElementById('step1Card').classList.add('completed');
+    document.getElementById('step1Content').style.display = 'none';
+    document.getElementById('step1Summary').style.display = 'block';
     
-    if (!calculationResults) {
-        alert('Error: Please calculate ROI first');
-        return;
-    }
+    document.getElementById('summaryHires').textContent = r.annualHires.toLocaleString();
+    document.getElementById('summaryCost').textContent = formatCurrency(r.costPerHire);
+    document.getElementById('summaryBadRate').textContent = r.badHireRate + '%';
+    document.getElementById('summaryScreening').textContent = formatCurrency(r.screeningCost);
     
-    showLoading();
-    document.getElementById('loadingText').textContent = 'Generating PDF...';
-    document.getElementById('loadingSubtext').textContent = 'Please wait';
+    const s2 = document.getElementById('step2Card');
+    s2.style.opacity = '1';
+    s2.style.pointerEvents = 'auto';
+    s2.classList.add('active');
     
-    try {
-        const doc = new jsPDF();
-        const r = calculationResults;
-        const fileName = `ROI_Report_${leadData.company || 'Company'}_${Date.now()}.pdf`;
-        
-        // ... (keep your existing PDF generation code) ...
-        
-        // Download locally
-        doc.save(fileName);
-        console.log('PDF downloaded locally');
-        
-        // Now send ROI data again (to update "PDF Downloaded" flag)
-        const roiData = {
-            action: 'pdfDownload',
-            email: leadData.email,
-            annualHires: r.annualHires,
-            costPerHire: r.costPerHire,
-            badHireRate: r.badHireRate,
-            screeningCost: r.screeningCost,
-            reductionRate: r.reductionRate,
-            currentBadHires: r.currentBadHires,
-            badHiresPrevented: r.badHiresPrevented,
-            currentBadHireCost: r.currentBadHireCost,
-            costAvoided: r.costAvoided,
-            screeningInvestment: r.screeningInvestment,
-            timeSaved: r.timeSaved,
-            timeValue: r.timeValue,
-            totalSavings: r.totalSavings,
-            netSavings: r.netSavings,
-            roiPercentage: r.roiPercentage
-        };
-        
-        console.log('Sending ROI data from PDF download:', roiData);
-        
-        fetch(scriptURL, {
-            method: "POST",
-            mode: 'no-cors',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(roiData)
-        })
-        .then(() => {
-            console.log('ROI data sent from PDF (assumed success)');
-            hideLoading();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            hideLoading();
-        });
-        
-    } catch (error) {
-        console.error('PDF generation error:', error);
-        hideLoading();
-        alert('Error: ' + error.message);
-    }
+    document.getElementById('totalSavings').textContent = formatCurrency(r.totalSavings);
+    document.getElementById('roiPercentage').textContent = r.roiPercentage + '% ROI';
+    document.getElementById('badHiresPrevented').textContent = r.badHiresPrevented;
+    document.getElementById('costAvoided').textContent = formatCurrency(r.costAvoided);
+    document.getElementById('timeSaved').textContent = r.timeSaved.toLocaleString() + ' hrs';
+    document.getElementById('currentBadHireCost').textContent = formatCurrency(r.currentBadHireCost);
+    document.getElementById('screeningInvestment').textContent = formatCurrency(r.screeningInvestment);
+    document.getElementById('netSavings').textContent = formatCurrency(r.netSavings);
+    
+    document.getElementById('resultsSection').classList.add('show');
+    
+    setTimeout(() => s2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
 }
 
-// Expose functions to global scope
+function editStep1() {
+    document.getElementById('step1Card').classList.add('active');
+    document.getElementById('step1Card').classList.remove('completed');
+    document.getElementById('step1Content').style.display = 'block';
+    document.getElementById('step1Summary').style.display = 'none';
+    
+    const s2 = document.getElementById('step2Card');
+    s2.style.opacity = '0.6';
+    s2.style.pointerEvents = 'none';
+    s2.classList.remove('active');
+    
+    document.getElementById('resultsSection').classList.remove('show');
+}
+
+// Expose functions
 window.setCurrency = setCurrency;
 window.updateSlider = updateSlider;
 window.updateInput = updateInput;
@@ -2093,6 +2134,6 @@ window.openLeadModal = openLeadModal;
 window.submitLead = submitLead;
 window.editStep1 = editStep1;
 window.downloadPDF = downloadPDF;
-  </script>
+    </script>
 </body>
 </html>
