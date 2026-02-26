@@ -1994,17 +1994,7 @@
                 badHireRate: calculationResults.badHireRate,
                 screeningCost: calculationResults.screeningCost,
                 reductionRate: calculationResults.reductionRate,
-                currentBadHires: "",
-                badHiresPrevented: "",
-                currentBadHireCost: "",
-                costAvoided: "",
-                screeningInvestment: "",
-                timeSaved: "",
-                timeValue: "",
-                totalSavings: "",
-                netSavings: "",
-                roiPercentage: "",
-                pdfDownloaded: "No"
+             
             };
             
             console.log("STEP 1 - Lead:", step1Data);
@@ -2062,7 +2052,7 @@
             
             console.log("STEP 2 - ROI:", step2Data);
             
-            fetch(LEAD_SHEET_URL, {
+            fetch(PDF_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
