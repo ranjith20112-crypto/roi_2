@@ -1883,142 +1883,127 @@ function openLeadModal() {
 // LEAD SUBMISSION - USER DETAILS ONLY
 // ==========================================
 
+// ==========================================
+// submitLead function - REMOVE response.json()
+// ==========================================
+
 function submitLead(event) {
     event.preventDefault();
     
-    // Store lead data globally
     leadData = {
         firstName: document.getElementById('leadFirstName').value.trim(),
         lastName: document.getElementById('leadLastName').value.trim(),
-        email: document.getElementById('leadEmail').value.trim(),
+        email: document.getElementById('leadEmail').value.trim().toLowerCase(), // FORCE LOWERCASE
         phone: document.getElementById('leadPhone').value.trim(),
         company: document.getElementById('leadCompany').value.trim(),
         companySize: document.getElementById('leadCompanySize').value,
         country: document.getElementById('leadCountry').value
     };
     
-    // Validate
-    const required = ['leadFirstName', 'leadLastName', 'leadEmail', 'leadPhone', 'leadCompany', 'leadCompanySize', 'leadCountry'];
-    let valid = true;
-    required.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el.value.trim()) {
-            valid = false;
-            el.style.borderColor = 'red';
-        } else {
-            el.style.borderColor = '';
-        }
-    });
+    // Validation...
     
-    if (!valid) {
-        alert('Please fill in all required fields');
-        return;
-    }
-    
-    // Calculate ROI for display only (don't send yet)
     calculationResults = calculateROI();
     
     const btn = document.querySelector('.btn-submit-lead');
     btn.disabled = true;
-    
     leadModal.hide();
     showLoading();
     
-    // Send ONLY user details - NO ROI data
     const sheetData = {
         action: 'lead',
         firstName: leadData.firstName,
         lastName: leadData.lastName,
-        email: leadData.email,
+        email: leadData.email, // Already lowercase
         phone: leadData.phone,
         company: leadData.company,
         companySize: leadData.companySize,
         country: leadData.country,
         currency: currentCurrency
-        // NO ROI DATA HERE!
     };
     
-    console.log('Sending lead data (user details only):', sheetData);
+    console.log('Sending lead data:', sheetData);
     
+    // FIX: Don't try to read response with no-cors
+    fetch(scriptURL, {
+        method: "POST",
+        mode: 'no-cors',  // This makes response opaque (unreadable)
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(sheetData)
+    })
+    .then(() => {
+        // With no-cors, we assume success if no network error
+        console.log('Lead data sent (assumed success)');
+        
+        // Wait 2 seconds for sheet to update, then send ROI
+        setTimeout(() => {
+            hideLoading();
+            showResults();
+            showSuccessState();
+            btn.disabled = false;
+            
+            // Send ROI data immediately after
+            updateSheetWithROI();
+        }, 2000);
+    })
+    .catch(error => {
+        console.error("Network error:", error);
+        hideLoading();
+        btn.disabled = false;
+        showResults();
+        showSuccessState();
+    });
+}
+
+// ==========================================
+// New function to send ROI data separately
+// ==========================================
+
+function updateSheetWithROI() {
+    const r = calculationResults;
+    
+    const roiData = {
+        action: 'pdfDownload',
+        email: leadData.email, // Already lowercase from leadData
+        annualHires: r.annualHires,
+        costPerHire: r.costPerHire,
+        badHireRate: r.badHireRate,
+        screeningCost: r.screeningCost,
+        reductionRate: r.reductionRate,
+        currentBadHires: r.currentBadHires,
+        badHiresPrevented: r.badHiresPrevented,
+        currentBadHireCost: r.currentBadHireCost,
+        costAvoided: r.costAvoided,
+        screeningInvestment: r.screeningInvestment,
+        timeSaved: r.timeSaved,
+        timeValue: r.timeValue,
+        totalSavings: r.totalSavings,
+        netSavings: r.netSavings,
+        roiPercentage: r.roiPercentage
+    };
+    
+    console.log('Sending ROI data:', roiData);
+    
+    // FIX: Remove response.json() here too
     fetch(scriptURL, {
         method: "POST",
         mode: 'no-cors',
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(sheetData)
+        body: JSON.stringify(roiData)
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Lead submission response:', data);
-        hideLoading();
-        showResults();
-        showSuccessState();
-        btn.disabled = false;
+    .then(() => {
+        console.log('ROI data sent (assumed success)');
     })
     .catch(error => {
-        console.error("Error:", error);
-        hideLoading();
-        btn.disabled = false;
-        showResults();
-        showSuccessState();
+        console.error('Error sending ROI data:', error);
     });
 }
 
-function showSuccessState() {
-    document.getElementById('leadForm').style.display = 'none';
-    document.getElementById('leadSuccessState').classList.add('show');
-    document.getElementById('securityBadges').style.display = 'none';
-}
-
-function showResults() {
-    const r = calculationResults;
-    
-    document.getElementById('step1Card').classList.remove('active');
-    document.getElementById('step1Card').classList.add('completed');
-    document.getElementById('step1Content').style.display = 'none';
-    document.getElementById('step1Summary').style.display = 'block';
-    
-    document.getElementById('summaryHires').textContent = r.annualHires.toLocaleString();
-    document.getElementById('summaryCost').textContent = formatCurrency(r.costPerHire);
-    document.getElementById('summaryBadRate').textContent = r.badHireRate + '%';
-    document.getElementById('summaryScreening').textContent = formatCurrency(r.screeningCost);
-    
-    const step2 = document.getElementById('step2Card');
-    step2.style.opacity = '1';
-    step2.style.pointerEvents = 'auto';
-    step2.classList.add('active');
-    
-    document.getElementById('totalSavings').textContent = formatCurrency(r.totalSavings);
-    document.getElementById('roiPercentage').textContent = r.roiPercentage + '% ROI';
-    document.getElementById('badHiresPrevented').textContent = r.badHiresPrevented;
-    document.getElementById('costAvoided').textContent = formatCurrency(r.costAvoided);
-    document.getElementById('timeSaved').textContent = r.timeSaved.toLocaleString() + ' hrs';
-    document.getElementById('currentBadHireCost').textContent = formatCurrency(r.currentBadHireCost);
-    document.getElementById('screeningInvestment').textContent = formatCurrency(r.screeningInvestment);
-    document.getElementById('netSavings').textContent = formatCurrency(r.netSavings);
-    
-    document.getElementById('resultsSection').classList.add('show');
-    
-    setTimeout(() => step2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
-}
-
-function editStep1() {
-    document.getElementById('step1Card').classList.add('active');
-    document.getElementById('step1Card').classList.remove('completed');
-    document.getElementById('step1Content').style.display = 'block';
-    document.getElementById('step1Summary').style.display = 'none';
-    
-    const step2 = document.getElementById('step2Card');
-    step2.style.opacity = '0.6';
-    step2.style.pointerEvents = 'none';
-    step2.classList.remove('active');
-    
-    document.getElementById('resultsSection').classList.remove('show');
-}
-
 // ==========================================
-// PDF DOWNLOAD - SEND ROI RESULTS TO SHEET
+// downloadPDF function - REMOVE response.json()
 // ==========================================
 
 async function downloadPDF() {
@@ -2028,13 +2013,11 @@ async function downloadPDF() {
         return;
     }
     
-    // Check if leadData exists
     if (!leadData || !leadData.email) {
         alert('Error: Please submit the lead form first');
         return;
     }
     
-    // Check if calculationResults exists
     if (!calculationResults) {
         alert('Error: Please calculate ROI first');
         return;
@@ -2049,90 +2032,13 @@ async function downloadPDF() {
         const r = calculationResults;
         const fileName = `ROI_Report_${leadData.company || 'Company'}_${Date.now()}.pdf`;
         
-        // Build PDF content
-        doc.setFillColor(26, 194, 193);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(24);
-        doc.setFont('helvetica', 'bold');
-        doc.text('HR ROI CALCULATOR REPORT', 105, 25, { align: 'center' });
+        // ... (keep your existing PDF generation code) ...
         
-        doc.setTextColor(15, 23, 42);
-        doc.setFontSize(12);
-        doc.text(`Generated for: ${leadData.company || 'Your Company'}`, 20, 55);
-        doc.text(`Contact: ${leadData.firstName || ''} ${leadData.lastName || ''}`, 20, 62);
-        doc.text(`Email: ${leadData.email || ''}`, 20, 69);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 76);
-        doc.text(`Currency: ${currentCurrency}`, 20, 83);
-        
-        doc.setFillColor(240, 253, 244);
-        doc.setDrawColor(16, 185, 129);
-        doc.roundedRect(15, 90, 180, 50, 3, 3, 'FD');
-        doc.setTextColor(16, 185, 129);
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text('EXECUTIVE SUMMARY', 25, 105);
-        doc.setTextColor(15, 23, 42);
-        doc.setFontSize(11);
-        doc.text(`Total Annual Savings: ${formatCurrencyFull(r.netSavings)}`, 25, 120);
-        doc.text(`ROI: ${r.roiPercentage}%`, 25, 128);
-        doc.text(`Bad Hires Prevented: ${r.badHiresPrevented}`, 25, 136);
-        
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text('INPUT PARAMETERS', 20, 155);
-        
-        doc.autoTable({
-            startY: 160,
-            head: [['Parameter', 'Value']],
-            body: [
-                ['Annual Hires', r.annualHires.toString()],
-                ['Cost Per Hire', formatCurrencyFull(r.costPerHire)],
-                ['Bad Hire Rate', r.badHireRate + '%'],
-                ['Screening Cost per Candidate', formatCurrencyFull(r.screeningCost)],
-                ['Expected Reduction', r.reductionRate + '%']
-            ],
-            theme: 'grid',
-            headStyles: { fillColor: [26, 194, 193], textColor: 255 },
-            styles: { fontSize: 10 }
-        });
-        
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text('CALCULATED RESULTS', 20, doc.lastAutoTable.finalY + 15);
-        
-        doc.autoTable({
-            startY: doc.lastAutoTable.finalY + 20,
-            head: [['Metric', 'Amount']],
-            body: [
-                ['Current Annual Bad Hire Cost', formatCurrencyFull(r.currentBadHireCost)],
-                ['Investment in Screening', formatCurrencyFull(r.screeningInvestment)],
-                ['Turnover Costs Avoided', formatCurrencyFull(r.costAvoided)],
-                ['HR Time Saved (hours)', r.timeSaved.toString()],
-                ['Net Annual Savings', formatCurrencyFull(r.netSavings)]
-            ],
-            theme: 'grid',
-            headStyles: { fillColor: [245, 158, 11], textColor: 255 },
-            styles: { fontSize: 10 }
-        });
-        
-        doc.setFillColor(15, 23, 42);
-        doc.rect(0, 280, 210, 17, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(10);
-        doc.text('Verifitech - Trust Simplified | www.verifitech.com', 105, 290, { align: 'center' });
-        
-        // Download locally first
+        // Download locally
         doc.save(fileName);
         console.log('PDF downloaded locally');
         
-        // Update loading text
-        document.getElementById('loadingText').textContent = 'Saving ROI data...';
-        document.getElementById('loadingSubtext').textContent = 'Updating your record';
-        
-        // ==========================================
-        // SEND ROI RESULTS TO GOOGLE SHEET
-        // ==========================================
+        // Now send ROI data again (to update "PDF Downloaded" flag)
         const roiData = {
             action: 'pdfDownload',
             email: leadData.email,
@@ -2153,7 +2059,7 @@ async function downloadPDF() {
             roiPercentage: r.roiPercentage
         };
         
-        console.log('Sending ROI data to Google Sheet:', roiData);
+        console.log('Sending ROI data from PDF download:', roiData);
         
         fetch(scriptURL, {
             method: "POST",
@@ -2163,13 +2069,12 @@ async function downloadPDF() {
             },
             body: JSON.stringify(roiData)
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('ROI data saved:', data);
+        .then(() => {
+            console.log('ROI data sent from PDF (assumed success)');
             hideLoading();
         })
         .catch(error => {
-            console.error('Error saving ROI data:', error);
+            console.error('Error:', error);
             hideLoading();
         });
         
