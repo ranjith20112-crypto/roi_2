@@ -1742,8 +1742,8 @@
         // ==========================================
 
         // REPLACE WITH YOUR GOOGLE SHEETS SCRIPT URL
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxg31QX3k5K6Y1LAqSuTRP3nAB-8xsgVOyNr3N6Dp1u_OBlYhnF4-U28Mv3UAbD5z4png/exec';
-
+         const LEAD_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxg31QX3k5K6Y1LAqSuTRP3nAB-8xsgVOyNr3N6Dp1u_OBlYhnF4-U28Mv3UAbD5z4png/exec';
+         const PDF_URL = 'https://script.google.com/macros/s/AKfycbyGhdFXsn-AMLniG4G68uEKh7jMuGBafSyJbHHx8ENeRXymz44hmy8baSfA5d0Di5oV/exec';
         const currencies = {
             'INR': { symbol: '₹', prefix: '₹', costMin: 15000, costMax: 600000, costDefault: 120000, costStep: 1000, screeningMin: 800, screeningMax: 10000, screeningDefault: 2500, screeningStep: 100, badHireCost: 450000 },
             'USD': { symbol: '$', prefix: '$', costMin: 500, costMax: 20000, costDefault: 4000, costStep: 100, screeningMin: 25, screeningMax: 300, screeningDefault: 75, screeningStep: 5, badHireCost: 15000 },
@@ -2009,7 +2009,7 @@
             
             console.log("STEP 1 - Lead:", step1Data);
             
-            fetch(scriptURL, {
+            fetch(LEAD_SHEET_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
@@ -2062,7 +2062,7 @@
             
             console.log("STEP 2 - ROI:", step2Data);
             
-            fetch(scriptURL, {
+            fetch(PDF_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
