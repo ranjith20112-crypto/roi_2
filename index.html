@@ -1942,6 +1942,7 @@ function submitLead(event) {
     
     fetch(scriptURL, {
         method: "POST",
+        mode: 'no-cors',
         headers: {
             "Content-Type": "application/json"
         },
@@ -2156,6 +2157,7 @@ async function downloadPDF() {
         
         fetch(scriptURL, {
             method: "POST",
+            mode: 'no-cors',
             headers: {
                 "Content-Type": "application/json"
             },
