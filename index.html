@@ -1,0 +1,2215 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR ROI Calculator | Background Screening Savings | Verifitech</title>
+    <meta name="description" content="Calculate the cost savings and ROI of implementing professional background screening for your HR department.">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1ac2c1;
+            --primary-dark: #16a8a7;
+            --primary-light: #e0f7f7;
+            --dark: #0f172a;
+            --navy: #1e293b;
+            --gray: #64748b;
+            --light-gray: #f8fafc;
+            --white: #ffffff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 50%, #e0f7f7 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navigation */
+        .navbar {
+            padding: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            height: 80px;
+        }
+        
+        .navbar.scrolled {
+            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--dark);
+            letter-spacing: -0.5px;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        
+        .navbar-brand span {
+            color: var(--primary);
+        }
+        
+        .brand-tagline {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--gray);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        
+        .nav-link {
+            font-weight: 600;
+            color: var(--navy);
+            margin: 0 0.6rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            padding: 2rem 0.5rem !important;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .btn-sales {
+            background: var(--primary);
+            color: white !important;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            margin-left: 1rem;
+            box-shadow: 0 4px 15px rgba(26, 194, 193, 0.3);
+            text-decoration: none;
+        }
+        
+        .btn-sales:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(26, 194, 193, 0.4);
+        }
+        
+        /* Hero Section */
+        .calculator-hero {
+            padding: 140px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .calculator-hero::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(26, 194, 193, 0.1) 0%, transparent 60%);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, rgba(26, 194, 193, 0.15), rgba(26, 194, 193, 0.05));
+            color: var(--primary-dark);
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(26, 194, 193, 0.3);
+        }
+        
+        .calculator-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            letter-spacing: -1.5px;
+        }
+        
+        .calculator-hero .lead {
+            font-size: 1.25rem;
+            color: var(--gray);
+            max-width: 500px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .hero-features {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 0.95rem;
+        }
+        
+        .hero-feature i {
+            color: var(--success);
+            font-size: 1.1rem;
+        }
+        
+        /* Calculator Section */
+        .calculator-section {
+            padding: 40px 0 100px;
+        }
+        
+        .calculator-container {
+            background: white;
+            border-radius: 32px;
+            padding: 3rem;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.1);
+            border: 1px solid rgba(26, 194, 193, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .calculator-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--purple), var(--pink), var(--warning), var(--primary));
+            background-size: 200% 100%;
+            animation: gradient 3s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .calculator-header h3 {
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .calculator-header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        
+        /* Currency Selector */
+        .currency-selector {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .currency-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .currency-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .currency-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .currency-btn img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        /* Step Cards */
+        .step-card {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .step-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(26, 194, 193, 0.15);
+        }
+        
+        .step-card.completed {
+            border-color: var(--success);
+            background: linear-gradient(135deg, #f0fdf4 0%, white 100%);
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .step-number-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .step-card.active .step-number-badge {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 8px 25px rgba(26, 194, 193, 0.4);
+        }
+        
+        .step-card.completed .step-number-badge {
+            background: var(--success);
+            color: white;
+        }
+        
+        .step-title-group h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+        
+        .step-title-group p {
+            color: var(--gray);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        /* Input Section */
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .input-group-custom {
+            position: relative;
+        }
+        
+        .input-group-custom.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .input-group-custom label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .input-group-custom label i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .info-tooltip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            color: var(--gray);
+            cursor: help;
+            margin-left: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .info-tooltip:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-wrapper input,
+        .input-wrapper select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+            height: auto;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .input-wrapper input:focus,
+        .input-wrapper select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26, 194, 193, 0.1);
+        }
+        
+        .input-wrapper .prefix,
+        .input-wrapper .suffix {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-weight: 600;
+            pointer-events: none;
+        }
+        
+        .input-wrapper .prefix {
+            left: 1.2rem;
+        }
+        
+        .input-wrapper .suffix {
+            right: 1.2rem;
+        }
+        
+        .input-wrapper input.has-prefix {
+            padding-left: 2.5rem;
+        }
+        
+        .input-wrapper input.has-suffix {
+            padding-right: 3rem;
+        }
+        
+        /* Slider Styling */
+        .slider-container {
+            margin-top: 0.5rem;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(26, 194, 193, 0.4);
+            transition: all 0.3s ease;
+            border: 3px solid white;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(26, 194, 193, 0.5);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(26, 194, 193, 0.4);
+            border: 3px solid white;
+            border: none;
+        }
+        
+        /* Calculate Button */
+        .btn-step-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(26, 194, 193, 0.35);
+            margin-top: 1rem;
+        }
+        
+        .btn-step-action:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 194, 193, 0.45);
+            color: white;
+        }
+        
+        .btn-edit {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .btn-edit:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        
+        /* Lead Form Modal */
+        .modal-content {
+            border: none;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-light), white);
+            border-bottom: 2px solid var(--primary);
+            padding: 2rem;
+        }
+        
+        .modal-title {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .lead-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
+        
+        .form-floating-custom {
+            position: relative;
+        }
+        
+        .form-floating-custom.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-floating-custom input,
+        .form-floating-custom select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+            height: auto;
+        }
+        
+        .form-floating-custom input:focus,
+        .form-floating-custom select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26, 194, 193, 0.1);
+        }
+        
+        .form-floating-custom label {
+            position: absolute;
+            left: 1.2rem;
+            top: 1rem;
+            font-size: 1rem;
+            color: var(--gray);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            background: white;
+            padding: 0 0.25rem;
+        }
+        
+        .form-floating-custom input:focus + label,
+        .form-floating-custom input:not(:placeholder-shown) + label,
+        .form-floating-custom select:focus + label,
+        .form-floating-custom select:not([value=""]) + label {
+            top: -0.6rem;
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .btn-submit-lead {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+            width: 100%;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .btn-submit-lead:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+            color: white;
+        }
+        
+        .btn-submit-lead:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .security-badges {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .security-badge i {
+            color: var(--success);
+            font-size: 1.1rem;
+        }
+        
+        /* Results Section */
+        .results-section {
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+        
+        .results-section.show {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .savings-highlight {
+            background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+            border: 2px solid var(--success);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .savings-highlight::before {
+            content: '💰';
+            position: absolute;
+            font-size: 6rem;
+            opacity: 0.05;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .savings-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--success);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .savings-label {
+            font-size: 1.1rem;
+            color: #065f46;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .roi-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--success);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-light), white);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        /* Breakdown Section */
+        .breakdown-section {
+            background: linear-gradient(135deg, #fef3c7, #fffbeb);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 2px dashed var(--warning);
+            margin-bottom: 2rem;
+        }
+        
+        .breakdown-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            color: #92400e;
+            font-size: 1.1rem;
+        }
+        
+        .breakdown-header i {
+            font-size: 1.3rem;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+        }
+        
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .breakdown-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #78350f;
+            font-weight: 500;
+        }
+        
+        .breakdown-label i {
+            color: var(--warning);
+            font-size: 1.1rem;
+        }
+        
+        .breakdown-value {
+            font-weight: 700;
+            color: #92400e;
+            font-size: 1.1rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--navy), var(--dark));
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(26, 194, 193, 0.2) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta-section h4 {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-size: 1.5rem;
+        }
+        
+        .cta-section p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 1.5rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn-cta {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(26, 194, 193, 0.3);
+            text-decoration: none;
+        }
+        
+        .btn-cta:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(26, 194, 193, 0.4);
+            color: white;
+        }
+        
+        /* Download Button */
+        .btn-download {
+            background: white;
+            color: var(--dark);
+            border: 2px solid var(--dark);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-download:hover {
+            background: var(--dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Assumptions Note */
+        .assumptions-note {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .assumptions-note strong {
+            color: var(--navy);
+            display: block;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .assumptions-note ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+        
+        .assumptions-note li {
+            margin-bottom: 0.25rem;
+        }
+        
+        /* Success State */
+        .success-state {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .success-state.show {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+        
+        .success-icon-large {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        .success-icon-large i {
+            color: white;
+            font-size: 2.5rem;
+        }
+        
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+        
+        .loading-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .loading-container {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        /* Animated Rings Loader */
+        .loader-rings {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+        }
+        
+        .loader-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+            animation: spin 1.5s linear infinite;
+        }
+        
+        .loader-ring:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            top: 0;
+            left: 0;
+            border-top-color: var(--primary);
+            animation-duration: 1.5s;
+        }
+        
+        .loader-ring:nth-child(2) {
+            width: 90px;
+            height: 90px;
+            top: 15px;
+            left: 15px;
+            border-top-color: var(--purple);
+            animation-duration: 1.2s;
+            animation-direction: reverse;
+        }
+        
+        .loader-ring:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 30px;
+            left: 30px;
+            border-top-color: var(--pink);
+            animation-duration: 0.9s;
+        }
+        
+        .loader-ring:nth-child(4) {
+            width: 30px;
+            height: 30px;
+            top: 45px;
+            left: 45px;
+            border-top-color: var(--warning);
+            animation-duration: 0.6s;
+            animation-direction: reverse;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Pulse Effect in Center */
+        .loader-pulse {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 20px var(--primary);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.5; }
+        }
+        
+        /* Loading Text */
+        .loading-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            animation: textPulse 2s ease-in-out infinite;
+        }
+        
+        .loading-subtext {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        @keyframes textPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        /* Progress Bar */
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 2rem auto 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--purple), var(--pink));
+            border-radius: 2px;
+            width: 0%;
+            animation: progressLoad 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .loading-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes progressLoad {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            70% { width: 80%; }
+            100% { width: 100%; }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Floating Particles */
+        .loading-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatUp 3s linear infinite;
+        }
+        
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; background: var(--primary); }
+        .particle:nth-child(2) { left: 20%; animation-delay: 0.5s; background: var(--purple); }
+        .particle:nth-child(3) { left: 30%; animation-delay: 1s; background: var(--pink); }
+        .particle:nth-child(4) { left: 40%; animation-delay: 1.5s; background: var(--warning); }
+        .particle:nth-child(5) { left: 50%; animation-delay: 0.3s; background: var(--primary); }
+        .particle:nth-child(6) { left: 60%; animation-delay: 0.8s; background: var(--purple); }
+        .particle:nth-child(7) { left: 70%; animation-delay: 1.2s; background: var(--pink); }
+        .particle:nth-child(8) { left: 80%; animation-delay: 1.7s; background: var(--warning); }
+        .particle:nth-child(9) { left: 90%; animation-delay: 0.2s; background: var(--primary); }
+        .particle:nth-child(10) { left: 15%; animation-delay: 2s; background: var(--purple); }
+        
+        @keyframes floatUp {
+            0% {
+                bottom: -10px;
+                opacity: 0;
+                transform: translateX(0) scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateX(10px) scale(1);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                bottom: 100%;
+                opacity: 0;
+                transform: translateX(-10px) scale(0.5);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 991px) {
+            .calculator-hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .input-grid, .lead-form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .savings-amount {
+                font-size: 2.5rem;
+            }
+            
+            .step-header {
+                flex-wrap: wrap;
+            }
+            
+            .security-badges {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .calculator-hero {
+                padding: 120px 0 60px;
+                text-align: center;
+            }
+            
+            .calculator-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero-features {
+                justify-content: center;
+            }
+            
+            .calculator-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .step-card {
+                padding: 1.5rem;
+            }
+            
+            .currency-selector {
+                gap: 0.25rem;
+            }
+            
+            .currency-btn {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.8rem;
+            }
+            
+            .loading-text {
+                font-size: 1.2rem;
+            }
+            
+            .loading-progress {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <div class="loading-container">
+            <div class="loader-rings">
+                <div class="loader-ring"></div>
+                <div class="loader-ring"></div>
+                <div class="loader-ring"></div>
+                <div class="loader-ring"></div>
+                <div class="loader-pulse"></div>
+            </div>
+            <div class="loading-text" id="loadingText">Processing Your Data...</div>
+            <div class="loading-subtext" id="loadingSubtext">Calculating your ROI savings</div>
+            <div class="loading-progress">
+                <div class="loading-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                Verifi<span>tech</span>
+                <span class="brand-tagline">Trust Simplified</span>
+            </a>
+            
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Solutions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Industries</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Pricing</a></li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <a href="#" class="btn btn-sales">Talk to Sales</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="calculator-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-5 mb-5 mb-lg-0">
+                    <div class="hero-badge">
+                        <i class="bi bi-calculator-fill"></i>
+                        HR Savings Calculator
+                    </div>
+                    <h1>Calculate Your Background Screening ROI</h1>
+                    <p class="lead">Discover how much your HR department can save by implementing professional background verification. Reduce bad hires, minimize turnover, and optimize recruitment costs.</p>
+                    
+                    <div class="hero-features">
+                        <div class="hero-feature">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Instant Results</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Industry Benchmarks</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Free Analysis</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-7">
+                    <div class="calculator-container">
+                        <div class="calculator-header">
+                            <h3><i class="bi bi-graph-up-arrow text-primary me-2"></i>HR ROI Calculator</h3>
+                            <p>Enter your hiring metrics to see potential savings</p>
+                        </div>
+                        
+                        <!-- Currency Selector -->
+                        <div class="currency-selector">
+                            <button class="currency-btn active" onclick="setCurrency('INR')" data-currency="INR">
+                                🇮🇳 INR
+                            </button>
+                            <button class="currency-btn" onclick="setCurrency('USD')" data-currency="USD">
+                                🇺🇸 USD
+                            </button>
+                            <button class="currency-btn" onclick="setCurrency('AED')" data-currency="AED">
+                                🇦🇪 AED
+                            </button>
+                            <button class="currency-btn" onclick="setCurrency('AUD')" data-currency="AUD">
+                                🇦🇺 AUD
+                            </button>
+                            <button class="currency-btn" onclick="setCurrency('SGD')" data-currency="SGD">
+                                🇸🇬 SGD
+                            </button>
+                        </div>
+                        
+                        <!-- Step 1: Input Data -->
+                        <div class="step-card active" id="step1Card">
+                            <div class="step-header">
+                                <div class="step-number-badge">1</div>
+                                <div class="step-title-group">
+                                    <h3>Your Hiring Data</h3>
+                                    <p>Enter your current recruitment metrics</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step-content" id="step1Content">
+                                <div class="input-grid">
+                                    <div class="input-group-custom">
+                                        <label>
+                                            <i class="bi bi-people-fill"></i>
+                                            Annual Hires
+                                            <span class="info-tooltip" title="Total number of new employees hired per year">i</span>
+                                        </label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="annualHires" placeholder="50" min="1" value="50" onchange="updateSlider('hires')">
+                                        </div>
+                                        <div class="slider-container">
+                                            <div class="slider-labels">
+                                                <span>1</span>
+                                                <span>500+</span>
+                                            </div>
+                                            <input type="range" id="hiresSlider" min="1" max="500" value="50" oninput="updateInput('hires')">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group-custom">
+                                        <label>
+                                            <i class="bi bi-currency-dollar"></i>
+                                            Cost Per Hire
+                                            <span class="info-tooltip" title="Average cost to hire one employee including advertising, interviewing, and onboarding">i</span>
+                                        </label>
+                                        <div class="input-wrapper">
+                                            <span class="prefix" id="costPrefix">₹</span>
+                                            <input type="number" id="costPerHire" class="has-prefix" placeholder="4000" min="500" value="120000" onchange="updateSlider('cost')">
+                                        </div>
+                                        <div class="slider-container">
+                                            <div class="slider-labels">
+                                                <span id="costMin">₹15k</span>
+                                                <span id="costMax">₹600k</span>
+                                            </div>
+                                            <input type="range" id="costSlider" min="15000" max="600000" step="1000" value="120000" oninput="updateInput('cost')">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group-custom">
+                                        <label>
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            Current Bad Hire Rate
+                                            <span class="info-tooltip" title="Percentage of hires that don't work out within the first year">i</span>
+                                        </label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="badHireRate" class="has-suffix" placeholder="15" min="0" max="100" value="15" onchange="updateSlider('badRate')">
+                                            <span class="suffix">%</span>
+                                        </div>
+                                        <div class="slider-container">
+                                            <div class="slider-labels">
+                                                <span>0%</span>
+                                                <span>50%</span>
+                                            </div>
+                                            <input type="range" id="badRateSlider" min="0" max="50" value="15" oninput="updateInput('badRate')">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group-custom">
+                                        <label>
+                                            <i class="bi bi-shield-check"></i>
+                                            Screening Cost per Candidate
+                                            <span class="info-tooltip" title="Cost of background verification per candidate">i</span>
+                                        </label>
+                                        <div class="input-wrapper">
+                                            <span class="prefix" id="screeningPrefix">₹</span>
+                                            <input type="number" id="screeningCost" class="has-prefix" placeholder="75" min="25" value="2500" onchange="updateSlider('screening')">
+                                        </div>
+                                        <div class="slider-container">
+                                            <div class="slider-labels">
+                                                <span id="screeningMin">₹800</span>
+                                                <span id="screeningMax">₹10k</span>
+                                            </div>
+                                            <input type="range" id="screeningSlider" min="800" max="10000" step="100" value="2500" oninput="updateInput('screening')">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group-custom full-width">
+                                        <label>
+                                            <i class="bi bi-graph-down"></i>
+                                            Expected Reduction in Bad Hires
+                                            <span class="info-tooltip" title="Background checks typically reduce bad hires by 40-70%">i</span>
+                                        </label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="reductionRate" class="has-suffix" placeholder="50" min="0" max="100" value="50" onchange="updateSlider('reduction')">
+                                            <span class="suffix">%</span>
+                                        </div>
+                                        <div class="slider-container">
+                                            <div class="slider-labels">
+                                                <span>0% (No improvement)</span>
+                                                <span>100% (Zero bad hires)</span>
+                                            </div>
+                                            <input type="range" id="reductionSlider" min="0" max="100" value="50" oninput="updateInput('reduction')">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn-step-action" onclick="openLeadModal()">
+                                    <i class="bi bi-calculator"></i>
+                                    Calculate Savings
+                                </button>
+                            </div>
+                            
+                            <div class="step-summary" id="step1Summary" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Annual Hires:</strong> <span id="summaryHires"></span></p>
+                                        <p class="mb-1"><strong>Cost Per Hire:</strong> <span id="summaryCost"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Bad Hire Rate:</strong> <span id="summaryBadRate"></span></p>
+                                        <p class="mb-1"><strong>Screening Cost:</strong> <span id="summaryScreening"></span></p>
+                                    </div>
+                                </div>
+                                <button class="btn-edit" onclick="editStep1()">
+                                    <i class="bi bi-pencil"></i> Edit Data
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Results -->
+                        <div class="step-card" id="step2Card" style="opacity: 0.6; pointer-events: none;">
+                            <div class="step-header">
+                                <div class="step-number-badge">2</div>
+                                <div class="step-title-group">
+                                    <h3>Your ROI Results</h3>
+                                    <p>See your potential savings and returns</p>
+                                </div>
+                            </div>
+                            
+                            <div class="results-section" id="resultsSection">
+                                <div class="savings-highlight">
+                                    <div class="savings-amount" id="totalSavings">₹0</div>
+                                    <div class="savings-label">Total Estimated Annual Savings</div>
+                                    <div class="roi-badge">
+                                        <i class="bi bi-trending-up"></i>
+                                        <span id="roiPercentage">0% ROI</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <i class="bi bi-person-x-fill"></i>
+                                        </div>
+                                        <div class="stat-value" id="badHiresPrevented">0</div>
+                                        <div class="stat-label">Bad Hires Prevented</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <i class="bi bi-cash-stack"></i>
+                                        </div>
+                                        <div class="stat-value" id="costAvoided">₹0</div>
+                                        <div class="stat-label">Turnover Costs Avoided</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <i class="bi bi-clock-history"></i>
+                                        </div>
+                                        <div class="stat-value" id="timeSaved">0 hrs</div>
+                                        <div class="stat-label">HR Time Saved</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="breakdown-section">
+                                    <div class="breakdown-header">
+                                        <i class="bi bi-receipt"></i>
+                                        Cost Breakdown Analysis
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <div class="breakdown-label">
+                                            <i class="bi bi-x-octagon"></i>
+                                            Current Annual Cost of Bad Hires
+                                        </div>
+                                        <div class="breakdown-value" id="currentBadHireCost">₹0</div>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <div class="breakdown-label">
+                                            <i class="bi bi-shield-check"></i>
+                                            Investment in Background Screening
+                                        </div>
+                                        <div class="breakdown-value" id="screeningInvestment">₹0</div>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <div class="breakdown-label">
+                                            <i class="bi bi-piggy-bank"></i>
+                                            Net Annual Savings
+                                        </div>
+                                        <div class="breakdown-value" id="netSavings" style="color: var(--success); font-size: 1.3rem;">₹0</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button class="btn-download" onclick="downloadPDF()">
+                                        <i class="bi bi-file-earmark-pdf"></i> Download PDF Report
+                                    </button>
+                                </div>
+                                
+                                <div class="cta-section mt-4">
+                                    <div class="cta-content">
+                                        <h4>Ready to Start Saving?</h4>
+                                        <p>Get a personalized quote for your organization and start reducing hiring risks today.</p>
+                                        <a href="#" class="btn-cta">
+                                            Get Custom Quote <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Assumptions -->
+                        <div class="assumptions-note">
+                            <strong><i class="bi bi-info-circle"></i> Calculation Assumptions:</strong>
+                            <ul>
+                                <li>Cost of a bad hire is estimated at 30% of annual salary (industry standard)</li>
+                                <li>Average time to replace a bad hire: 45-60 days of HR productivity lost</li>
+                                <li>Background screening typically identifies 10-15% of candidates with discrepancies</li>
+                                <li>Figures are estimates based on SHRM and industry research data</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Lead Form Modal --> 
+<div class="modal fade" id="leadModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"> <div class="modal-dialog modal-dialog-centered modal-lg"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title"> <i class="bi bi-gift-fill text-warning"></i> See Your Savings! </h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> </div> <div class="modal-body"> <p class="text-muted mb-4">Enter your details to view your personalized ROI calculation and receive a detailed savings report.</p> <form id="leadForm" onsubmit="submitLead(event)"> <div class="lead-form-grid"> <div class="form-floating-custom"> <input type="text" id="leadFirstName" placeholder=" " required> <label for="leadFirstName">First Name *</label> </div> <div class="form-floating-custom"> <input type="text" id="leadLastName" placeholder=" " required> <label for="leadLastName">Last Name *</label> </div> <div class="form-floating-custom full-width"> <input type="email" id="leadEmail" placeholder=" " required> <label for="leadEmail">Work Email Address *</label> </div> <div class="form-floating-custom"> <input type="tel" id="leadPhone" placeholder=" " required> <label for="leadPhone">Phone Number *</label> </div> <div class="form-floating-custom"> <input type="text" id="leadCompany" placeholder=" " required> <label for="leadCompany">Company Name *</label> </div> <div class="form-floating-custom"> <select id="leadCompanySize" required> <option value="" disabled selected></option> <option value="1-50">1-50 employees</option> <option value="51-200">51-200 employees</option> <option value="201-1000">201-1000 employees</option> <option value="1000+">1000+ employees</option> </select> <label for="leadCompanySize">Company Size *</label> </div> <div class="form-floating-custom full-width"> <select id="leadCountry" required> <option value="" disabled selected></option> <option value="India">India</option> <option value="USA">United States</option> <option value="UAE">UAE</option> <option value="Australia">Australia</option> <option value="Singapore">Singapore</option> <option value="Other">Other</option> </select> <label for="leadCountry">Country *</label> </div> </div> <button type="submit" class="btn-submit-lead"> View My Savings Report <i class="bi bi-arrow-right"></i> </button> 
+  </form>
+
+                    <!-- Success State -->
+                    <div class="success-state" id="leadSuccessState">
+                        <div class="success-icon-large">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Report Generated!</h4>
+                        <p class="text-muted mb-3">Check your email for the detailed savings analysis.</p>
+                    </div>
+                    
+                    <div class="security-badges" id="securityBadges">
+                        <div class="security-badge">
+                            <i class="bi bi-shield-lock"></i>
+                            <span>256-bit SSL</span>
+                        </div>
+                        <div class="security-badge">
+                            <i class="bi bi-check-circle"></i>
+                            <span>ISO 27001</span>
+                        </div>
+                        <div class="security-badge">
+                            <i class="bi bi-lock"></i>
+                            <span>GDPR Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+      // ==========================================
+// COMPLETE HR ROI CALCULATOR JAVASCRIPT
+// Send Lead + ROI Data on Form Submit
+// ==========================================
+
+// REPLACE WITH YOUR GOOGLE SHEETS SCRIPT URL
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxg31QX3k5K6Y1LAqSuTRP3nAB-8xsgVOyNr3N6Dp1u_OBlYhnF4-U28Mv3UAbD5z4png/exec';
+// ==========================================
+// HR ROI CALCULATOR WITH PDF TO GOOGLE SHEETS
+// ==========================================
+
+let currentCurrency = 'INR';
+let leadModal;
+let calculationResults = {};
+let leadData = {};
+let currentRowId = null; // Store Row ID from first submission
+
+const currencies = {
+    'INR': { symbol: '₹', prefix: '₹', costMin: 15000, costMax: 600000, costDefault: 120000, costStep: 1000, screeningMin: 800, screeningMax: 10000, screeningDefault: 2500, screeningStep: 100, badHireCost: 450000 },
+    'USD': { symbol: '$', prefix: '$', costMin: 500, costMax: 20000, costDefault: 4000, costStep: 100, screeningMin: 25, screeningMax: 300, screeningDefault: 75, screeningStep: 5, badHireCost: 15000 },
+    'AED': { symbol: 'AED', prefix: 'AED', costMin: 2000, costMax: 75000, costDefault: 15000, costStep: 500, screeningMin: 100, screeningMax: 1100, screeningDefault: 275, screeningStep: 25, badHireCost: 55000 },
+    'AUD': { symbol: 'A$', prefix: 'A$', costMin: 800, costMax: 30000, costDefault: 6000, costStep: 100, screeningMin: 40, screeningMax: 450, screeningDefault: 110, screeningStep: 5, badHireCost: 22000 },
+    'SGD': { symbol: 'S$', prefix: 'S$', costMin: 700, costMax: 28000, costDefault: 5500, costStep: 100, screeningMin: 35, screeningMax: 400, screeningDefault: 100, screeningStep: 5, badHireCost: 20000 }
+};
+
+const loadingMessages = [
+    { text: "Processing Your Data...", subtext: "Calculating your ROI savings" },
+    { text: "Analyzing Hiring Metrics...", subtext: "Crunching the numbers" },
+    { text: "Computing Savings...", subtext: "Almost there" },
+    { text: "Generating Report...", subtext: "Preparing your results" }
+];
+let loadingInterval;
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    leadModal = new bootstrap.Modal(document.getElementById('leadModal'));
+    
+    const inputs = ['annualHires', 'costPerHire', 'badHireRate', 'screeningCost', 'reductionRate'];
+    inputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', function() {
+                const typeMap = {
+                    'annualHires': 'hires',
+                    'costPerHire': 'cost',
+                    'badHireRate': 'badRate',
+                    'screeningCost': 'screening',
+                    'reductionRate': 'reduction'
+                };
+                updateSlider(typeMap[id]);
+            });
+        }
+    });
+    
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+});
+
+// ==========================================
+// CURRENCY FUNCTIONS
+// ==========================================
+
+function setCurrency(currency) {
+    currentCurrency = currency;
+    const config = currencies[currency];
+    
+    document.querySelectorAll('.currency-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.currency === currency) btn.classList.add('active');
+    });
+    
+    document.getElementById('costPrefix').textContent = config.prefix;
+    document.getElementById('screeningPrefix').textContent = config.prefix;
+    
+    document.getElementById('costPerHire').value = config.costDefault;
+    document.getElementById('costSlider').min = config.costMin;
+    document.getElementById('costSlider').max = config.costMax;
+    document.getElementById('costSlider').step = config.costStep;
+    document.getElementById('costSlider').value = config.costDefault;
+    
+    document.getElementById('screeningCost').value = config.screeningDefault;
+    document.getElementById('screeningSlider').min = config.screeningMin;
+    document.getElementById('screeningSlider').max = config.screeningMax;
+    document.getElementById('screeningSlider').step = config.screeningStep;
+    document.getElementById('screeningSlider').value = config.screeningDefault;
+    
+    const formatCompact = (num) => {
+        if (currentCurrency === 'INR' && num >= 1000) {
+            return config.prefix + (num / 1000) + 'k';
+        }
+        return config.prefix + num;
+    };
+    
+    document.getElementById('costMin').textContent = formatCompact(config.costMin);
+    document.getElementById('costMax').textContent = formatCompact(config.costMax);
+    document.getElementById('screeningMin').textContent = config.prefix + config.screeningMin;
+    document.getElementById('screeningMax').textContent = config.prefix + config.screeningMax;
+}
+
+function updateSlider(type) {
+    const map = {
+        'hires': { input: 'annualHires', slider: 'hiresSlider' },
+        'cost': { input: 'costPerHire', slider: 'costSlider' },
+        'badRate': { input: 'badHireRate', slider: 'badRateSlider' },
+        'screening': { input: 'screeningCost', slider: 'screeningSlider' },
+        'reduction': { input: 'reductionRate', slider: 'reductionSlider' }
+    };
+    
+    const m = map[type];
+    if (m) {
+        document.getElementById(m.slider).value = document.getElementById(m.input).value;
+    }
+}
+
+function updateInput(type) {
+    const map = {
+        'hires': { input: 'annualHires', slider: 'hiresSlider' },
+        'cost': { input: 'costPerHire', slider: 'costSlider' },
+        'badRate': { input: 'badHireRate', slider: 'badRateSlider' },
+        'screening': { input: 'screeningCost', slider: 'screeningSlider' },
+        'reduction': { input: 'reductionRate', slider: 'reductionSlider' }
+    };
+    
+    const m = map[type];
+    if (m) {
+        document.getElementById(m.input).value = document.getElementById(m.slider).value;
+    }
+}
+
+// ==========================================
+// CALCULATION FUNCTIONS
+// ==========================================
+
+function calculateROI() {
+    const annualHires = parseInt(document.getElementById('annualHires').value) || 0;
+    const costPerHire = parseInt(document.getElementById('costPerHire').value) || 0;
+    const badHireRate = parseInt(document.getElementById('badHireRate').value) || 0;
+    const screeningCost = parseInt(document.getElementById('screeningCost').value) || 0;
+    const reductionRate = parseInt(document.getElementById('reductionRate').value) || 0;
+    
+    const config = currencies[currentCurrency];
+    
+    const currentBadHires = Math.round(annualHires * (badHireRate / 100));
+    const badHiresPrevented = Math.round(currentBadHires * (reductionRate / 100));
+    const costPerBadHire = config.badHireCost;
+    const currentBadHireCost = currentBadHires * costPerBadHire;
+    const costAvoided = badHiresPrevented * costPerBadHire;
+    const screeningInvestment = annualHires * screeningCost;
+    const timeSaved = badHiresPrevented * 40;
+    const timeValue = timeSaved * (costPerHire / 200);
+    const totalSavings = costAvoided + timeValue - screeningInvestment;
+    const netSavings = totalSavings;
+    const roiPercentage = screeningInvestment > 0 ? Math.round((netSavings / screeningInvestment) * 100) : 0;
+    
+    return {
+        annualHires, costPerHire, badHireRate, screeningCost, reductionRate,
+        currentBadHires, badHiresPrevented, currentBadHireCost, costAvoided,
+        screeningInvestment, timeSaved, timeValue, totalSavings, netSavings, roiPercentage,
+        currency: currentCurrency, currencySymbol: config.symbol
+    };
+}
+
+function formatCurrency(amount) {
+    const config = currencies[currentCurrency];
+    if (currentCurrency === 'INR') {
+        if (amount >= 10000000) return config.symbol + (amount / 10000000).toFixed(2) + ' Cr';
+        if (amount >= 100000) return config.symbol + (amount / 100000).toFixed(2) + ' L';
+        if (amount >= 1000) return config.symbol + (amount / 1000).toFixed(1) + 'k';
+    } else {
+        if (amount >= 1000000) return config.symbol + (amount / 1000000).toFixed(1) + 'M';
+        if (amount >= 1000) return config.symbol + (amount / 1000).toFixed(1) + 'k';
+    }
+    return config.symbol + amount.toLocaleString();
+}
+
+function formatCurrencyFull(amount) {
+    return currencies[currentCurrency].symbol + amount.toLocaleString();
+}
+
+// ==========================================
+// UI FUNCTIONS
+// ==========================================
+
+function showLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    const textEl = document.getElementById('loadingText');
+    const subtextEl = document.getElementById('loadingSubtext');
+    
+    overlay.classList.add('show');
+    
+    let messageIndex = 0;
+    loadingInterval = setInterval(() => {
+        messageIndex = (messageIndex + 1) % loadingMessages.length;
+        textEl.textContent = loadingMessages[messageIndex].text;
+        subtextEl.textContent = loadingMessages[messageIndex].subtext;
+    }, 1500);
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('show');
+    clearInterval(loadingInterval);
+}
+
+function openLeadModal() {
+    leadModal.show();
+}
+
+// ==========================================
+// LEAD SUBMISSION (FIRST STEP)
+// ==========================================
+
+function submitLead(event) {
+    event.preventDefault();
+    
+    // Collect lead data
+    leadData = {
+        firstName: document.getElementById('leadFirstName').value.trim(),
+        lastName: document.getElementById('leadLastName').value.trim(),
+        email: document.getElementById('leadEmail').value.trim(),
+        phone: document.getElementById('leadPhone').value.trim(),
+        company: document.getElementById('leadCompany').value.trim(),
+        companySize: document.getElementById('leadCompanySize').value,
+        country: document.getElementById('leadCountry').value
+    };
+    
+    // Validate
+    const required = ['leadFirstName', 'leadLastName', 'leadEmail', 'leadPhone', 'leadCompany', 'leadCompanySize', 'leadCountry'];
+    let valid = true;
+    required.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) {
+            valid = false;
+            el.style.borderColor = 'red';
+        } else {
+            el.style.borderColor = '';
+        }
+    });
+    
+    if (!valid) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    calculationResults = calculateROI();
+    
+    const btn = document.querySelector('.btn-submit-lead');
+    btn.disabled = true;
+    
+    leadModal.hide();
+    showLoading();
+    
+    // Prepare data for Google Sheets
+    const sheetData = {
+        action: 'lead',
+        timestamp: new Date().toISOString(),
+        firstName: leadData.firstName,
+        lastName: leadData.lastName,
+        email: leadData.email,
+        phone: leadData.phone,
+        company: leadData.company,
+        companySize: leadData.companySize,
+        country: leadData.country,
+        currency: currentCurrency,
+        annualHires: calculationResults.annualHires,
+        costPerHire: calculationResults.costPerHire,
+        badHireRate: calculationResults.badHireRate,
+        screeningCost: calculationResults.screeningCost,
+        reductionRate: calculationResults.reductionRate,
+        currentBadHires: calculationResults.currentBadHires,
+        badHiresPrevented: calculationResults.badHiresPrevented,
+        currentBadHireCost: calculationResults.currentBadHireCost,
+        costAvoided: calculationResults.costAvoided,
+        screeningInvestment: calculationResults.screeningInvestment,
+        timeSaved: calculationResults.timeSaved,
+        timeValue: calculationResults.timeValue,
+        totalSavings: calculationResults.totalSavings,
+        netSavings: calculationResults.netSavings,
+        roiPercentage: calculationResults.roiPercentage
+    };
+    
+    console.log('Sending lead data:', sheetData);
+    
+    fetch(scriptURL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(sheetData)
+    })
+    .then(() => {
+        // Note: With no-cors, we can't read the response, so we proceed after delay
+        setTimeout(() => {
+            hideLoading();
+            showResults();
+            showSuccessState();
+            btn.disabled = false;
+        }, 2000);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        hideLoading();
+        btn.disabled = false;
+        alert("Error saving data. Please try again.");
+    });
+}
+
+function showSuccessState() {
+    document.getElementById('leadForm').style.display = 'none';
+    document.getElementById('leadSuccessState').classList.add('show');
+    document.getElementById('securityBadges').style.display = 'none';
+}
+
+function showResults() {
+    const r = calculationResults;
+    
+    document.getElementById('step1Card').classList.remove('active');
+    document.getElementById('step1Card').classList.add('completed');
+    document.getElementById('step1Content').style.display = 'none';
+    document.getElementById('step1Summary').style.display = 'block';
+    
+    document.getElementById('summaryHires').textContent = r.annualHires.toLocaleString();
+    document.getElementById('summaryCost').textContent = formatCurrency(r.costPerHire);
+    document.getElementById('summaryBadRate').textContent = r.badHireRate + '%';
+    document.getElementById('summaryScreening').textContent = formatCurrency(r.screeningCost);
+    
+    const step2 = document.getElementById('step2Card');
+    step2.style.opacity = '1';
+    step2.style.pointerEvents = 'auto';
+    step2.classList.add('active');
+    
+    document.getElementById('totalSavings').textContent = formatCurrency(r.totalSavings);
+    document.getElementById('roiPercentage').textContent = r.roiPercentage + '% ROI';
+    document.getElementById('badHiresPrevented').textContent = r.badHiresPrevented;
+    document.getElementById('costAvoided').textContent = formatCurrency(r.costAvoided);
+    document.getElementById('timeSaved').textContent = r.timeSaved.toLocaleString() + ' hrs';
+    document.getElementById('currentBadHireCost').textContent = formatCurrency(r.currentBadHireCost);
+    document.getElementById('screeningInvestment').textContent = formatCurrency(r.screeningInvestment);
+    document.getElementById('netSavings').textContent = formatCurrency(r.netSavings);
+    
+    document.getElementById('resultsSection').classList.add('show');
+    
+    setTimeout(() => step2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+}
+
+function editStep1() {
+    document.getElementById('step1Card').classList.add('active');
+    document.getElementById('step1Card').classList.remove('completed');
+    document.getElementById('step1Content').style.display = 'block';
+    document.getElementById('step1Summary').style.display = 'none';
+    
+    const step2 = document.getElementById('step2Card');
+    step2.style.opacity = '0.6';
+    step2.style.pointerEvents = 'none';
+    step2.classList.remove('active');
+    
+    document.getElementById('resultsSection').classList.remove('show');
+}
+
+// ==========================================
+// PDF DOWNLOAD + SEND TO GOOGLE SHEETS
+// ==========================================
+// ==========================================
+// PDF DOWNLOAD - Send ONLY Email + Link to Google Sheet
+// ==========================================
+
+async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    if (!jsPDF) {
+        alert('PDF library not loaded');
+        return;
+    }
+    
+    // Show loading
+    showLoading();
+    document.getElementById('loadingText').textContent = 'Preparing PDF...';
+    document.getElementById('loadingSubtext').textContent = 'Please wait';
+    
+    const doc = new jsPDF();
+    const r = calculationResults;
+    const fileName = `ROI_Report_${leadData.company || 'Company'}_${new Date().toISOString().split('T')[0]}.pdf`;
+    
+    // Build PDF content (same as before)
+    doc.setFillColor(26, 194, 193);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('HR ROI CALCULATOR REPORT', 105, 25, { align: 'center' });
+    
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Generated for: ${leadData.company || 'Your Company'}`, 20, 55);
+    doc.text(`Contact: ${leadData.firstName || ''} ${leadData.lastName || ''} (${leadData.email || ''})`, 20, 62);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 69);
+    doc.text(`Currency: ${currentCurrency}`, 20, 76);
+    
+    doc.setFillColor(240, 253, 244);
+    doc.setDrawColor(16, 185, 129);
+    doc.roundedRect(15, 85, 180, 55, 3, 3, 'FD');
+    doc.setTextColor(16, 185, 129);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('EXECUTIVE SUMMARY', 25, 100);
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(11);
+    doc.text(`Total Annual Savings: ${formatCurrencyFull(r.netSavings)}`, 25, 115);
+    doc.text(`ROI: ${r.roiPercentage}%`, 25, 123);
+    doc.text(`Bad Hires Prevented: ${r.badHiresPrevented}`, 25, 131);
+    doc.text(`Time Saved: ${r.timeSaved} hours`, 25, 139);
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INPUT PARAMETERS', 20, 155);
+    
+    doc.autoTable({
+        startY: 160,
+        head: [['Parameter', 'Value']],
+        body: [
+            ['Annual Hires', r.annualHires.toString()],
+            ['Cost Per Hire', formatCurrencyFull(r.costPerHire)],
+            ['Bad Hire Rate', r.badHireRate + '%'],
+            ['Screening Cost per Candidate', formatCurrencyFull(r.screeningCost)],
+            ['Expected Reduction', r.reductionRate + '%']
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [26, 194, 193], textColor: 255 },
+        styles: { fontSize: 10 },
+        columnStyles: { 0: { cellWidth: 100 }, 1: { cellWidth: 60 } }
+    });
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CALCULATED RESULTS', 20, doc.lastAutoTable.finalY + 15);
+    
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 20,
+        head: [['Metric', 'Amount']],
+        body: [
+            ['Current Annual Bad Hire Cost', formatCurrencyFull(r.currentBadHireCost)],
+            ['Investment in Screening', formatCurrencyFull(r.screeningInvestment)],
+            ['Turnover Costs Avoided', formatCurrencyFull(r.costAvoided)],
+            ['HR Time Saved (hours)', r.timeSaved.toString()],
+            ['Net Annual Savings', formatCurrencyFull(r.netSavings)]
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [245, 158, 11], textColor: 255 },
+        styles: { fontSize: 10 },
+        columnStyles: { 0: { cellWidth: 100 }, 1: { cellWidth: 60 } }
+    });
+    
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 280, 210, 17, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.text('Verifitech - Trust Simplified | www.verifitech.com', 105, 290, { align: 'center' });
+    
+    // Generate PDF blob
+    const pdfBlob = doc.output('blob');
+    
+    // Download locally first
+    doc.save(fileName);
+    
+    // Wait 5 seconds for user to save, then send to Google Sheets
+    document.getElementById('loadingText').textContent = 'Finalizing...';
+    document.getElementById('loadingSubtext').textContent = 'Saving to records';
+    
+    setTimeout(async function() {
+        const reader = new FileReader();
+        reader.readAsDataURL(pdfBlob);
+        
+        reader.onloadend = async function() {
+            const base64data = reader.result.split(',')[1];
+            
+            // Send ONLY: Email, Company, PDF (no ROI data!)
+            const pdfData = {
+                action: 'pdfDownload',
+                email: leadData.email,      // Only this
+                company: leadData.company,  // And this
+                pdfBase64: base64data,
+                fileName: fileName
+            };
+            
+            try {
+                await fetch(scriptURL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(pdfData)
+                });
+                
+                console.log('PDF link sent to Google Sheets');
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                hideLoading();
+            }
+        };
+        
+        reader.onerror = function() {
+            console.error('Error reading PDF');
+            hideLoading();
+        };
+        
+    }, 5000); // 5 second delay
+}
+
+function formatCurrencyFull(amount) {
+    return currencies[currentCurrency].symbol + amount.toLocaleString();
+}
+// Expose to global scope
+window.setCurrency = setCurrency;
+window.updateSlider = updateSlider;
+window.updateInput = updateInput;
+window.openLeadModal = openLeadModal;
+window.submitLead = submitLead;
+window.editStep1 = editStep1;
+window.downloadPDF = downloadPDF;
+  </script>
+</body>
+</html>
