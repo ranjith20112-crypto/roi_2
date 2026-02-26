@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1643,9 +1642,68 @@
         </div>
     </section>
 
-<!-- Lead Form Modal --> 
-<div class="modal fade" id="leadModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"> <div class="modal-dialog modal-dialog-centered modal-lg"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title"> <i class="bi bi-gift-fill text-warning"></i> See Your Savings! </h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> </div> <div class="modal-body"> <p class="text-muted mb-4">Enter your details to view your personalized ROI calculation and receive a detailed savings report.</p> <form id="leadForm" onsubmit="submitLead(event)"> <div class="lead-form-grid"> <div class="form-floating-custom"> <input type="text" id="leadFirstName" placeholder=" " required> <label for="leadFirstName">First Name *</label> </div> <div class="form-floating-custom"> <input type="text" id="leadLastName" placeholder=" " required> <label for="leadLastName">Last Name *</label> </div> <div class="form-floating-custom full-width"> <input type="email" id="leadEmail" placeholder=" " required> <label for="leadEmail">Work Email Address *</label> </div> <div class="form-floating-custom"> <input type="tel" id="leadPhone" placeholder=" " required> <label for="leadPhone">Phone Number *</label> </div> <div class="form-floating-custom"> <input type="text" id="leadCompany" placeholder=" " required> <label for="leadCompany">Company Name *</label> </div> <div class="form-floating-custom"> <select id="leadCompanySize" required> <option value="" disabled selected></option> <option value="1-50">1-50 employees</option> <option value="51-200">51-200 employees</option> <option value="201-1000">201-1000 employees</option> <option value="1000+">1000+ employees</option> </select> <label for="leadCompanySize">Company Size *</label> </div> <div class="form-floating-custom full-width"> <select id="leadCountry" required> <option value="" disabled selected></option> <option value="India">India</option> <option value="USA">United States</option> <option value="UAE">UAE</option> <option value="Australia">Australia</option> <option value="Singapore">Singapore</option> <option value="Other">Other</option> </select> <label for="leadCountry">Country *</label> </div> </div> <button type="submit" class="btn-submit-lead"> View My Savings Report <i class="bi bi-arrow-right"></i> </button> 
-  </form>
+    <!-- Lead Form Modal --> 
+    <div class="modal fade" id="leadModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-gift-fill text-warning"></i> See Your Savings!
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-4">Enter your details to view your personalized ROI calculation and receive a detailed savings report.</p>
+                    
+                    <form id="leadForm" onsubmit="submitLead(event)">
+                        <div class="lead-form-grid">
+                            <div class="form-floating-custom">
+                                <input type="text" id="leadFirstName" placeholder=" " required>
+                                <label for="leadFirstName">First Name *</label>
+                            </div>
+                            <div class="form-floating-custom">
+                                <input type="text" id="leadLastName" placeholder=" " required>
+                                <label for="leadLastName">Last Name *</label>
+                            </div>
+                            <div class="form-floating-custom full-width">
+                                <input type="email" id="leadEmail" placeholder=" " required>
+                                <label for="leadEmail">Work Email Address *</label>
+                            </div>
+                            <div class="form-floating-custom">
+                                <input type="tel" id="leadPhone" placeholder=" " required>
+                                <label for="leadPhone">Phone Number *</label>
+                            </div>
+                            <div class="form-floating-custom">
+                                <input type="text" id="leadCompany" placeholder=" " required>
+                                <label for="leadCompany">Company Name *</label>
+                            </div>
+                            <div class="form-floating-custom">
+                                <select id="leadCompanySize" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="1-50">1-50 employees</option>
+                                    <option value="51-200">51-200 employees</option>
+                                    <option value="201-1000">201-1000 employees</option>
+                                    <option value="1000+">1000+ employees</option>
+                                </select>
+                                <label for="leadCompanySize">Company Size *</label>
+                            </div>
+                            <div class="form-floating-custom full-width">
+                                <select id="leadCountry" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="India">India</option>
+                                    <option value="USA">United States</option>
+                                    <option value="UAE">UAE</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="Singapore">Singapore</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <label for="leadCountry">Country *</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit-lead">
+                            View My Savings Report <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </form>
 
                     <!-- Success State -->
                     <div class="success-state" id="leadSuccessState">
@@ -1679,460 +1737,476 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-      // ==========================================
-// COMPLETE HR ROI CALCULATOR JAVASCRIPT
-// Send Lead + ROI Data on Form Submit
+        // ==========================================
+        // FIXED HR ROI CALCULATOR JAVASCRIPT
+        // ==========================================
 
-// ==========================================
+        // REPLACE WITH YOUR GOOGLE SHEETS SCRIPT URL
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxg31QX3k5K6Y1LAqSuTRP3nAB-8xsgVOyNr3N6Dp1u_OBlYhnF4-U28Mv3UAbD5z4png/exec';
 
-// REPLACE WITH YOUR GOOGLE SHEETS SCRIPT URL
-const scriptURL ='https://script.google.com/macros/s/AKfycbxg31QX3k5K6Y1LAqSuTRP3nAB-8xsgVOyNr3N6Dp1u_OBlYhnF4-U28Mv3UAbD5z4png/exec';
-// ==========================================
-// JAVASCRIPT - Website Frontend
-// Put this in your HTML file
-// ==========================================
+        const currencies = {
+            'INR': { symbol: '₹', prefix: '₹', costMin: 15000, costMax: 600000, costDefault: 120000, costStep: 1000, screeningMin: 800, screeningMax: 10000, screeningDefault: 2500, screeningStep: 100, badHireCost: 450000 },
+            'USD': { symbol: '$', prefix: '$', costMin: 500, costMax: 20000, costDefault: 4000, costStep: 100, screeningMin: 25, screeningMax: 300, screeningDefault: 75, screeningStep: 5, badHireCost: 15000 },
+            'AED': { symbol: 'AED', prefix: 'AED', costMin: 2000, costMax: 75000, costDefault: 15000, costStep: 500, screeningMin: 100, screeningMax: 1100, screeningDefault: 275, screeningStep: 25, badHireCost: 55000 },
+            'AUD': { symbol: 'A$', prefix: 'A$', costMin: 800, costMax: 30000, costDefault: 6000, costStep: 100, screeningMin: 40, screeningMax: 450, screeningDefault: 110, screeningStep: 5, badHireCost: 22000 },
+            'SGD': { symbol: 'S$', prefix: 'S$', costMin: 700, costMax: 28000, costDefault: 5500, costStep: 100, screeningMin: 35, screeningMax: 400, screeningDefault: 100, screeningStep: 5, badHireCost: 20000 }
+        };
 
-const scriptURL = 'https://script.google.com/macros/s/AKfycbxFEwH8whPo3f8QFBUpAGNpkG3PaOa_KelhAs59rD_j86ry-pvCIs4h14zCpdimWXVl/exec';
+        let currentCurrency = 'INR';
+        let leadModal;
+        let calculationResults = {};
+        let leadData = {};
+        let userEmail = null;
+        let roiAlreadySent = false;
 
-const currencies = {
-    'INR': { symbol: '₹', prefix: '₹', costMin: 15000, costMax: 600000, costDefault: 120000, costStep: 1000, screeningMin: 800, screeningMax: 10000, screeningDefault: 2500, screeningStep: 100, badHireCost: 450000 },
-    'USD': { symbol: '$', prefix: '$', costMin: 500, costMax: 20000, costDefault: 4000, costStep: 100, screeningMin: 25, screeningMax: 300, screeningDefault: 75, screeningStep: 5, badHireCost: 15000 },
-    'AED': { symbol: 'AED', prefix: 'AED', costMin: 2000, costMax: 75000, costDefault: 15000, costStep: 500, screeningMin: 100, screeningMax: 1100, screeningDefault: 275, screeningStep: 25, badHireCost: 55000 },
-    'AUD': { symbol: 'A$', prefix: 'A$', costMin: 800, costMax: 30000, costDefault: 6000, costStep: 100, screeningMin: 40, screeningMax: 450, screeningDefault: 110, screeningStep: 5, badHireCost: 22000 },
-    'SGD': { symbol: 'S$', prefix: 'S$', costMin: 700, costMax: 28000, costDefault: 5500, costStep: 100, screeningMin: 35, screeningMax: 400, screeningDefault: 100, screeningStep: 5, badHireCost: 20000 }
-};
+        const loadingMessages = [
+            { text: "Processing Your Data...", subtext: "Calculating your ROI savings" },
+            { text: "Analyzing Hiring Metrics...", subtext: "Crunching the numbers" },
+            { text: "Computing Savings...", subtext: "Almost there" },
+            { text: "Generating Report...", subtext: "Preparing your results" }
+        ];
+        let loadingInterval;
 
-let currentCurrency = 'INR';
-let leadModal;
-let calculationResults = {};
-let leadData = {};
-let userEmail = null;
-let roiAlreadySent = false;
-
-document.addEventListener('DOMContentLoaded', function() {
-    leadModal = new bootstrap.Modal(document.getElementById('leadModal'));
-    setupListeners();
-    setCurrency('INR');
-});
-
-function setupListeners() {
-    ['annualHires', 'costPerHire', 'badHireRate', 'screeningCost', 'reductionRate'].forEach(id => {
-        document.getElementById(id)?.addEventListener('input', () => {
-            const map = { 'annualHires': 'hires', 'costPerHire': 'cost', 'badHireRate': 'badRate', 'screeningCost': 'screening', 'reductionRate': 'reduction' };
-            updateSlider(map[id]);
+        document.addEventListener('DOMContentLoaded', function() {
+            leadModal = new bootstrap.Modal(document.getElementById('leadModal'));
+            
+            const inputs = ['annualHires', 'costPerHire', 'badHireRate', 'screeningCost', 'reductionRate'];
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        const typeMap = {
+                            'annualHires': 'hires',
+                            'costPerHire': 'cost',
+                            'badHireRate': 'badRate',
+                            'screeningCost': 'screening',
+                            'reductionRate': 'reduction'
+                        };
+                        updateSlider(typeMap[id]);
+                    });
+                }
+            });
+            
+            window.addEventListener('scroll', function() {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
         });
-    });
-    
-    window.addEventListener('scroll', () => {
-        document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50);
-    });
-}
 
-function setCurrency(currency) {
-    currentCurrency = currency;
-    const c = currencies[currency];
-    
-    document.querySelectorAll('.currency-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.currency === currency);
-    });
-    
-    document.getElementById('costPrefix').textContent = c.prefix;
-    document.getElementById('screeningPrefix').textContent = c.prefix;
-    
-    document.getElementById('costPerHire').value = c.costDefault;
-    const cs = document.getElementById('costSlider');
-    [cs.min, cs.max, cs.step, cs.value] = [c.costMin, c.costMax, c.costStep, c.costDefault];
-    
-    document.getElementById('screeningCost').value = c.screeningDefault;
-    const ss = document.getElementById('screeningSlider');
-    [ss.min, ss.max, ss.step, ss.value] = [c.screeningMin, c.screeningMax, c.screeningStep, c.screeningDefault];
-    
-    const fmt = n => currency === 'INR' && n >= 1000 ? c.prefix + (n/1000) + 'k' : c.prefix + n;
-    document.getElementById('costMin').textContent = fmt(c.costMin);
-    document.getElementById('costMax').textContent = fmt(c.costMax);
-    document.getElementById('screeningMin').textContent = c.prefix + c.screeningMin;
-    document.getElementById('screeningMax').textContent = c.prefix + c.screeningMax;
-}
-
-function updateSlider(type) {
-    const map = { 'hires': ['annualHires', 'hiresSlider'], 'cost': ['costPerHire', 'costSlider'], 'badRate': ['badHireRate', 'badRateSlider'], 'screening': ['screeningCost', 'screeningSlider'], 'reduction': ['reductionRate', 'reductionSlider'] };
-    document.getElementById(map[type][1]).value = document.getElementById(map[type][0]).value;
-}
-
-function updateInput(type) {
-    const map = { 'hires': ['annualHires', 'hiresSlider'], 'cost': ['costPerHire', 'costSlider'], 'badRate': ['badHireRate', 'badRateSlider'], 'screening': ['screeningCost', 'screeningSlider'], 'reduction': ['reductionRate', 'reductionSlider'] };
-    document.getElementById(map[type][0]).value = document.getElementById(map[type][1]).value;
-}
-
-function calculateROI() {
-    const ah = parseInt(document.getElementById('annualHires').value) || 0;
-    const cph = parseInt(document.getElementById('costPerHire').value) || 0;
-    const bhr = parseInt(document.getElementById('badHireRate').value) || 0;
-    const sc = parseInt(document.getElementById('screeningCost').value) || 0;
-    const rr = parseInt(document.getElementById('reductionRate').value) || 0;
-    const cfg = currencies[currentCurrency];
-    
-    const cbh = Math.round(ah * (bhr / 100));
-    const bhp = Math.round(cbh * (rr / 100));
-    const cbhc = cbh * cfg.badHireCost;
-    const ca = bhp * cfg.badHireCost;
-    const si = ah * sc;
-    const ts = bhp * 40;
-    const tv = Math.round(ts * (cph / 200));
-    const ns = ca + tv - si;
-    const roi = si > 0 ? Math.round((ns / si) * 100) : 0;
-    
-    return { annualHires: ah, costPerHire: cph, badHireRate: bhr, screeningCost: sc, reductionRate: rr, currentBadHires: cbh, badHiresPrevented: bhp, currentBadHireCost: cbhc, costAvoided: ca, screeningInvestment: si, timeSaved: ts, timeValue: tv, totalSavings: ns, netSavings: ns, roiPercentage: roi, currency: currentCurrency };
-}
-
-function formatCurrency(amt) {
-    const c = currencies[currentCurrency];
-    const a = Math.abs(amt);
-    if (currentCurrency === 'INR') {
-        if (a >= 10000000) return c.symbol + (a/10000000).toFixed(2) + ' Cr';
-        if (a >= 100000) return c.symbol + (a/100000).toFixed(2) + ' L';
-        if (a >= 1000) return c.symbol + (a/1000).toFixed(1) + 'k';
-    } else {
-        if (a >= 1000000) return c.symbol + (a/1000000).toFixed(1) + 'M';
-        if (a >= 1000) return c.symbol + (a/1000).toFixed(1) + 'k';
-    }
-    return c.symbol + a.toLocaleString();
-}
-
-function formatFull(amt) {
-    return currencies[currentCurrency].symbol + Number(amt).toLocaleString();
-}
-
-function showLoading() {
-    document.getElementById('loadingOverlay').classList.add('show');
-}
-
-function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('show');
-}
-
-function openLeadModal() {
-    leadModal.show();
-}
-
-// ==========================================
-// STEP 1: LEAD FORM SUBMIT → SEND LEAD ONLY
-// ==========================================
-
-function submitLead(e) {
-    e.preventDefault();
-    
-    leadData = {
-        firstName: document.getElementById('leadFirstName').value.trim(),
-        lastName: document.getElementById('leadLastName').value.trim(),
-        email: document.getElementById('leadEmail').value.trim(),
-        phone: document.getElementById('leadPhone').value.trim(),
-        company: document.getElementById('leadCompany').value.trim(),
-        companySize: document.getElementById('leadCompanySize').value,
-        country: document.getElementById('leadCountry').value
-    };
-    
-    // Validate
-    const req = ['leadFirstName', 'leadLastName', 'leadEmail', 'leadPhone', 'leadCompany', 'leadCompanySize', 'leadCountry'];
-    for (let id of req) {
-        if (!document.getElementById(id).value.trim()) {
-            alert('Please fill all required fields');
-            return;
+        function setCurrency(currency) {
+            currentCurrency = currency;
+            const c = currencies[currency];
+            
+            document.querySelectorAll('.currency-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.currency === currency);
+            });
+            
+            document.getElementById('costPrefix').textContent = c.prefix;
+            document.getElementById('screeningPrefix').textContent = c.prefix;
+            
+            document.getElementById('costPerHire').value = c.costDefault;
+            const cs = document.getElementById('costSlider');
+            cs.min = c.costMin;
+            cs.max = c.costMax;
+            cs.step = c.costStep;
+            cs.value = c.costDefault;
+            
+            document.getElementById('screeningCost').value = c.screeningDefault;
+            const ss = document.getElementById('screeningSlider');
+            ss.min = c.screeningMin;
+            ss.max = c.screeningMax;
+            ss.step = c.screeningStep;
+            ss.value = c.screeningDefault;
+            
+            const fmt = n => currency === 'INR' && n >= 1000 ? c.prefix + (n/1000) + 'k' : c.prefix + n;
+            document.getElementById('costMin').textContent = fmt(c.costMin);
+            document.getElementById('costMax').textContent = fmt(c.costMax);
+            document.getElementById('screeningMin').textContent = c.prefix + c.screeningMin;
+            document.getElementById('screeningMax').textContent = c.prefix + c.screeningMax;
         }
-    }
-    
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(leadData.email)) {
-        alert('Please enter valid email');
-        return;
-    }
-    
-    calculationResults = calculateROI();
-    userEmail = leadData.email;
-    
-    const btn = document.querySelector('.btn-submit-lead');
-    btn.disabled = true;
-    leadModal.hide();
-    showLoading();
-    
-    // Send LEAD ONLY (step 1)
-    const step1Data = {
-        step: "lead",
-        timestamp: new Date().toISOString(),
-        email: leadData.email,
-        firstName: leadData.firstName,
-        lastName: leadData.lastName,
-        phone: leadData.phone,
-        company: leadData.company,
-        companySize: leadData.companySize,
-        country: leadData.country,
-        currency: currentCurrency,
-        annualHires: calculationResults.annualHires,
-        costPerHire: calculationResults.costPerHire,
-        badHireRate: calculationResults.badHireRate,
-        screeningCost: calculationResults.screeningCost,
-        reductionRate: calculationResults.reductionRate,
-        // ROI fields EMPTY
-        currentBadHires: "",
-        badHiresPrevented: "",
-        currentBadHireCost: "",
-        costAvoided: "",
-        screeningInvestment: "",
-        timeSaved: "",
-        timeValue: "",
-        totalSavings: "",
-        netSavings: "",
-        roiPercentage: "",
-        pdfDownloaded: "No"
-    };
-    
-    console.log("STEP 1 - Lead:", step1Data);
-    
-    fetch(scriptURL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(step1Data)
-    }).then(() => {
-        setTimeout(() => {
-            hideLoading();
-            showResults();
-            document.getElementById('leadForm').style.display = 'none';
-            document.getElementById('leadSuccessState').classList.add('show');
-            btn.disabled = false;
-        }, 2000);
-    }).catch(err => {
-        console.error(err);let currentCurrency = 'INR';
-let leadModal;
-let calculationResults = {};
-let leadData = {};
 
-const currencies = {
-    'INR': { symbol: '₹', prefix: '₹', costMin: 15000, costMax: 600000, costDefault: 120000, costStep: 1000, screeningMin: 800, screeningMax: 10000, screeningDefault: 2500, screeningStep: 100, badHireCost: 450000 },
-    'USD': { symbol: '$', prefix: '$', costMin: 500, costMax: 20000, costDefault: 4000, costStep: 100, screeningMin: 25, screeningMax: 300, screeningDefault: 75, screeningStep: 5, badHireCost: 15000 },
-    'AED': { symbol: 'AED', prefix: 'AED', costMin: 2000, costMax: 75000, costDefault: 15000, costStep: 500, screeningMin: 100, screeningMax: 1100, screeningDefault: 275, screeningStep: 25, badHireCost: 55000 },
-    'AUD': { symbol: 'A$', prefix: 'A$', costMin: 800, costMax: 30000, costDefault: 6000, costStep: 100, screeningMin: 40, screeningMax: 450, screeningDefault: 110, screeningStep: 5, badHireCost: 22000 },
-    'SGD': { symbol: 'S$', prefix: 'S$', costMin: 700, costMax: 28000, costDefault: 5500, costStep: 100, screeningMin: 35, screeningMax: 400, screeningDefault: 100, screeningStep: 5, badHireCost: 20000 }
-};
+        function updateSlider(type) {
+            const map = { 
+                'hires': ['annualHires', 'hiresSlider'], 
+                'cost': ['costPerHire', 'costSlider'], 
+                'badRate': ['badHireRate', 'badRateSlider'], 
+                'screening': ['screeningCost', 'screeningSlider'], 
+                'reduction': ['reductionRate', 'reductionSlider'] 
+            };
+            if (map[type]) {
+                document.getElementById(map[type][1]).value = document.getElementById(map[type][0]).value;
+            }
+        }
 
-const loadingMessages = [
-    { text: "Processing Your Data...", subtext: "Calculating your ROI savings" },
-    { text: "Analyzing Hiring Metrics...", subtext: "Crunching the numbers" },
-    { text: "Computing Savings...", subtext: "Almost there" },
-    { text: "Generating Report...", subtext: "Preparing your results" }
-];
-let loadingInterval;
+        function updateInput(type) {
+            const map = { 
+                'hires': ['annualHires', 'hiresSlider'], 
+                'cost': ['costPerHire', 'costSlider'], 
+                'badRate': ['badHireRate', 'badRateSlider'], 
+                'screening': ['screeningCost', 'screeningSlider'], 
+                'reduction': ['reductionRate', 'reductionSlider'] 
+            };
+            if (map[type]) {
+                document.getElementById(map[type][0]).value = document.getElementById(map[type][1]).value;
+            }
+        }
 
-document.addEventListener('DOMContentLoaded', function() {
-    leadModal = new bootstrap.Modal(document.getElementById('leadModal'));
-    
-    const inputs = ['annualHires', 'costPerHire', 'badHireRate', 'screeningCost', 'reductionRate'];
-    inputs.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('input', function() {
-                const typeMap = {
-                    'annualHires': 'hires',
-                    'costPerHire': 'cost',
-                    'badHireRate': 'badRate',
-                    'screeningCost': 'screening',
-                    'reductionRate': 'reduction'
-                };
-                updateSlider(typeMap[id]);
+        function calculateROI() {
+            const ah = parseInt(document.getElementById('annualHires').value) || 0;
+            const cph = parseInt(document.getElementById('costPerHire').value) || 0;
+            const bhr = parseInt(document.getElementById('badHireRate').value) || 0;
+            const sc = parseInt(document.getElementById('screeningCost').value) || 0;
+            const rr = parseInt(document.getElementById('reductionRate').value) || 0;
+            const cfg = currencies[currentCurrency];
+            
+            const cbh = Math.round(ah * (bhr / 100));
+            const bhp = Math.round(cbh * (rr / 100));
+            const cbhc = cbh * cfg.badHireCost;
+            const ca = bhp * cfg.badHireCost;
+            const si = ah * sc;
+            const ts = bhp * 40;
+            const tv = Math.round(ts * (cph / 200));
+            const ns = ca + tv - si;
+            const roi = si > 0 ? Math.round((ns / si) * 100) : 0;
+            
+            return { 
+                annualHires: ah, 
+                costPerHire: cph, 
+                badHireRate: bhr, 
+                screeningCost: sc, 
+                reductionRate: rr, 
+                currentBadHires: cbh, 
+                badHiresPrevented: bhp, 
+                currentBadHireCost: cbhc, 
+                costAvoided: ca, 
+                screeningInvestment: si, 
+                timeSaved: ts, 
+                timeValue: tv, 
+                totalSavings: ns, 
+                netSavings: ns, 
+                roiPercentage: roi, 
+                currency: currentCurrency 
+            };
+        }
+
+        function formatCurrency(amt) {
+            const c = currencies[currentCurrency];
+            const a = Math.abs(amt);
+            if (currentCurrency === 'INR') {
+                if (a >= 10000000) return c.symbol + (a/10000000).toFixed(2) + ' Cr';
+                if (a >= 100000) return c.symbol + (a/100000).toFixed(2) + ' L';
+                if (a >= 1000) return c.symbol + (a/1000).toFixed(1) + 'k';
+            } else {
+                if (a >= 1000000) return c.symbol + (a/1000000).toFixed(1) + 'M';
+                if (a >= 1000) return c.symbol + (a/1000).toFixed(1) + 'k';
+            }
+            return c.symbol + a.toLocaleString();
+        }
+
+        function formatFull(amt) {
+            return currencies[currentCurrency].symbol + Number(amt).toLocaleString();
+        }
+
+        function showLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            const textEl = document.getElementById('loadingText');
+            const subtextEl = document.getElementById('loadingSubtext');
+            
+            overlay.classList.add('show');
+            
+            let messageIndex = 0;
+            loadingInterval = setInterval(() => {
+                messageIndex = (messageIndex + 1) % loadingMessages.length;
+                textEl.textContent = loadingMessages[messageIndex].text;
+                subtextEl.textContent = loadingMessages[messageIndex].subtext;
+            }, 1500);
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('show');
+            clearInterval(loadingInterval);
+        }
+
+        function openLeadModal() {
+            leadModal.show();
+        }
+
+        function submitLead(e) {
+            e.preventDefault();
+            
+            leadData = {
+                firstName: document.getElementById('leadFirstName').value.trim(),
+                lastName: document.getElementById('leadLastName').value.trim(),
+                email: document.getElementById('leadEmail').value.trim(),
+                phone: document.getElementById('leadPhone').value.trim(),
+                company: document.getElementById('leadCompany').value.trim(),
+                companySize: document.getElementById('leadCompanySize').value,
+                country: document.getElementById('leadCountry').value
+            };
+            
+            const req = ['leadFirstName', 'leadLastName', 'leadEmail', 'leadPhone', 'leadCompany', 'leadCompanySize', 'leadCountry'];
+            let valid = true;
+            for (let id of req) {
+                const el = document.getElementById(id);
+                if (!el.value.trim()) {
+                    valid = false;
+                    el.classList.add('is-invalid');
+                } else {
+                    el.classList.remove('is-invalid');
+                }
+            }
+            
+            if (!valid) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(leadData.email)) {
+                alert('Please enter valid email');
+                return;
+            }
+            
+            calculationResults = calculateROI();
+            userEmail = leadData.email;
+            
+            const btn = document.querySelector('.btn-submit-lead');
+            btn.disabled = true;
+            leadModal.hide();
+            showLoading();
+            
+            const step1Data = {
+                step: "lead",
+                timestamp: new Date().toISOString(),
+                email: leadData.email,
+                firstName: leadData.firstName,
+                lastName: leadData.lastName,
+                phone: leadData.phone,
+                company: leadData.company,
+                companySize: leadData.companySize,
+                country: leadData.country,
+                currency: currentCurrency,
+                annualHires: calculationResults.annualHires,
+                costPerHire: calculationResults.costPerHire,
+                badHireRate: calculationResults.badHireRate,
+                screeningCost: calculationResults.screeningCost,
+                reductionRate: calculationResults.reductionRate,
+                currentBadHires: "",
+                badHiresPrevented: "",
+                currentBadHireCost: "",
+                costAvoided: "",
+                screeningInvestment: "",
+                timeSaved: "",
+                timeValue: "",
+                totalSavings: "",
+                netSavings: "",
+                roiPercentage: "",
+                pdfDownloaded: "No"
+            };
+            
+            console.log("STEP 1 - Lead:", step1Data);
+            
+            fetch(scriptURL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(step1Data)
+            }).then(() => {
+                setTimeout(() => {
+                    hideLoading();
+                    showResults();
+                    document.getElementById('leadForm').style.display = 'none';
+                    document.getElementById('leadSuccessState').classList.add('show');
+                    document.getElementById('securityBadges').style.display = 'none';
+                    btn.disabled = false;
+                }, 2000);
+            }).catch(err => {
+                console.error(err);
+                hideLoading();
+                btn.disabled = false;
+                alert('Error submitting form. Please try again.');
             });
         }
-    });
-    
-    window.addEventListener('scroll', function() {
 
-        hideLoading();
-        showResults();
-        btn.disabled = false;
-    });
-}
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            if (!jsPDF) return alert('PDF library not loaded');
+            
+            createPDF();
+            
+            if (!roiAlreadySent && userEmail) {
+                sendROI();
+            }
+        }
 
-// ==========================================
-// STEP 2: PDF DOWNLOAD → SEND ROI ONLY
-// ==========================================
+        function sendROI() {
+            const step2Data = {
+                step: "roi",
+                timestamp: new Date().toISOString(),
+                email: userEmail,
+                currentBadHires: calculationResults.currentBadHires,
+                badHiresPrevented: calculationResults.badHiresPrevented,
+                currentBadHireCost: calculationResults.currentBadHireCost,
+                costAvoided: calculationResults.costAvoided,
+                screeningInvestment: calculationResults.screeningInvestment,
+                timeSaved: calculationResults.timeSaved,
+                timeValue: calculationResults.timeValue,
+                totalSavings: calculationResults.totalSavings,
+                netSavings: calculationResults.netSavings,
+                roiPercentage: calculationResults.roiPercentage,
+                pdfDownloaded: "Yes"
+            };
+            
+            console.log("STEP 2 - ROI:", step2Data);
+            
+            fetch(scriptURL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(step2Data)
+            }).then(() => {
+                console.log("ROI saved");
+                roiAlreadySent = true;
+            }).catch(err => {
+                console.error("Error:", err);
+            });
+        }
 
-function downloadPDF() {
-    const { jsPDF } = window.jspdf;
-    if (!jsPDF) return alert('PDF library not loaded');
-    
-    // Create PDF
-    createPDF();
-    
-    // Send ROI data (only once)
-    if (!roiAlreadySent && userEmail) {
-        sendROI();
-    }
-}
+        function createPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const r = calculationResults;
+            
+            doc.setFillColor(26, 194, 193);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.text('HR ROI CALCULATOR REPORT', 105, 25, { align: 'center' });
+            
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(12);
+            doc.text(`Generated for: ${leadData.company || 'Your Company'}`, 20, 55);
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 62);
+            doc.text(`Currency: ${currentCurrency}`, 20, 69);
+            
+            doc.setFillColor(240, 253, 244);
+            doc.setDrawColor(16, 185, 129);
+            doc.roundedRect(15, 80, 180, 50, 3, 3, 'FD');
+            doc.setTextColor(16, 185, 129);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('EXECUTIVE SUMMARY', 25, 95);
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(11);
+            doc.text(`Total Annual Savings: ${formatFull(r.netSavings)}`, 25, 108);
+            doc.text(`ROI: ${r.roiPercentage}%`, 25, 116);
+            doc.text(`Bad Hires Prevented: ${r.badHiresPrevented}`, 25, 124);
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('INPUT PARAMETERS', 20, 145);
+            
+            doc.autoTable({
+                startY: 150,
+                head: [['Parameter', 'Value']],
+                body: [
+                    ['Annual Hires', r.annualHires.toString()],
+                    ['Cost Per Hire', formatFull(r.costPerHire)],
+                    ['Bad Hire Rate', r.badHireRate + '%'],
+                    ['Screening Cost', formatFull(r.screeningCost)],
+                    ['Expected Reduction', r.reductionRate + '%']
+                ],
+                theme: 'grid',
+                headStyles: { fillColor: [26, 194, 193], textColor: 255 },
+                styles: { fontSize: 10 }
+            });
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('CALCULATED RESULTS', 20, doc.lastAutoTable.finalY + 15);
+            
+            doc.autoTable({
+                startY: doc.lastAutoTable.finalY + 20,
+                head: [['Metric', 'Amount']],
+                body: [
+                    ['Current Bad Hire Cost', formatFull(r.currentBadHireCost)],
+                    ['Screening Investment', formatFull(r.screeningInvestment)],
+                    ['Costs Avoided', formatFull(r.costAvoided)],
+                    ['Time Saved', r.timeSaved + ' hours'],
+                    ['Net Savings', formatFull(r.netSavings)]
+                ],
+                theme: 'grid',
+                headStyles: { fillColor: [245, 158, 11], textColor: 255 },
+                styles: { fontSize: 10 }
+            });
+            
+            doc.setFillColor(15, 23, 42);
+            doc.rect(0, 280, 210, 17, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.text('Verifitech - Trust Simplified', 105, 290, { align: 'center' });
+            
+            doc.save(`ROI_Report_${(leadData.company || 'Company').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
 
-function sendROI() {
-    const step2Data = {
-        step: "roi",
-        timestamp: new Date().toISOString(),
-        email: userEmail,
-        // ROI results ONLY
-        currentBadHires: calculationResults.currentBadHires,
-        badHiresPrevented: calculationResults.badHiresPrevented,
-        currentBadHireCost: calculationResults.currentBadHireCost,
-        costAvoided: calculationResults.costAvoided,
-        screeningInvestment: calculationResults.screeningInvestment,
-        timeSaved: calculationResults.timeSaved,
-        timeValue: calculationResults.timeValue,
-        totalSavings: calculationResults.totalSavings,
-        netSavings: calculationResults.netSavings,
-        roiPercentage: calculationResults.roiPercentage,
-        pdfDownloaded: "Yes"
-    };
-    
-    console.log("STEP 2 - ROI:", step2Data);
-    
-    fetch(scriptURL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(step2Data)
-    }).then(() => {
-        console.log("ROI saved");
-        roiAlreadySent = true;
-    }).catch(err => {
-        console.error("Error:", err);
-    });
-}
+        function showResults() {
+            const r = calculationResults;
+            
+            document.getElementById('step1Card').classList.remove('active');
+            document.getElementById('step1Card').classList.add('completed');
+            document.getElementById('step1Content').style.display = 'none';
+            document.getElementById('step1Summary').style.display = 'block';
+            
+            document.getElementById('summaryHires').textContent = r.annualHires.toLocaleString();
+            document.getElementById('summaryCost').textContent = formatCurrency(r.costPerHire);
+            document.getElementById('summaryBadRate').textContent = r.badHireRate + '%';
+            document.getElementById('summaryScreening').textContent = formatCurrency(r.screeningCost);
+            
+            const s2 = document.getElementById('step2Card');
+            s2.style.opacity = '1';
+            s2.style.pointerEvents = 'auto';
+            s2.classList.add('active');
+            
+            document.getElementById('totalSavings').textContent = formatCurrency(r.totalSavings);
+            document.getElementById('roiPercentage').textContent = r.roiPercentage + '% ROI';
+            document.getElementById('badHiresPrevented').textContent = r.badHiresPrevented;
+            document.getElementById('costAvoided').textContent = formatCurrency(r.costAvoided);
+            document.getElementById('timeSaved').textContent = r.timeSaved.toLocaleString() + ' hrs';
+            document.getElementById('currentBadHireCost').textContent = formatCurrency(r.currentBadHireCost);
+            document.getElementById('screeningInvestment').textContent = formatCurrency(r.screeningInvestment);
+            document.getElementById('netSavings').textContent = formatCurrency(r.netSavings);
+            
+            document.getElementById('resultsSection').classList.add('show');
+            
+            setTimeout(() => s2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+        }
 
-function createPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const r = calculationResults;
-    
-    doc.setFillColor(26, 194, 193);
-    doc.rect(0, 0, 210, 40, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text('HR ROI CALCULATOR REPORT', 105, 25, { align: 'center' });
-    
-    doc.setTextColor(15, 23, 42);
-    doc.setFontSize(12);
-    doc.text(`Generated for: ${leadData.company || 'Your Company'}`, 20, 55);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 62);
-    doc.text(`Currency: ${currentCurrency}`, 20, 69);
-    
-    doc.setFillColor(240, 253, 244);
-    doc.setDrawColor(16, 185, 129);
-    doc.roundedRect(15, 80, 180, 50, 3, 3, 'FD');
-    doc.setTextColor(16, 185, 129);
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('EXECUTIVE SUMMARY', 25, 95);
-    doc.setTextColor(15, 23, 42);
-    doc.setFontSize(11);
-    doc.text(`Total Annual Savings: ${formatFull(r.netSavings)}`, 25, 108);
-    doc.text(`ROI: ${r.roiPercentage}%`, 25, 116);
-    doc.text(`Bad Hires Prevented: ${r.badHiresPrevented}`, 25, 124);
-    
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('INPUT PARAMETERS', 20, 145);
-    
-    doc.autoTable({
-        startY: 150,
-        head: [['Parameter', 'Value']],
-        body: [
-            ['Annual Hires', r.annualHires.toString()],
-            ['Cost Per Hire', formatFull(r.costPerHire)],
-            ['Bad Hire Rate', r.badHireRate + '%'],
-            ['Screening Cost', formatFull(r.screeningCost)],
-            ['Expected Reduction', r.reductionRate + '%']
-        ],
-        theme: 'grid',
-        headStyles: { fillColor: [26, 194, 193], textColor: 255 },
-        styles: { fontSize: 10 }
-    });
-    
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('CALCULATED RESULTS', 20, doc.lastAutoTable.finalY + 15);
-    
-    doc.autoTable({
-        startY: doc.lastAutoTable.finalY + 20,
-        head: [['Metric', 'Amount']],
-        body: [
-            ['Current Bad Hire Cost', formatFull(r.currentBadHireCost)],
-            ['Screening Investment', formatFull(r.screeningInvestment)],
-            ['Costs Avoided', formatFull(r.costAvoided)],
-            ['Time Saved', r.timeSaved + ' hours'],
-            ['Net Savings', formatFull(r.netSavings)]
-        ],
-        theme: 'grid',
-        headStyles: { fillColor: [245, 158, 11], textColor: 255 },
-        styles: { fontSize: 10 }
-    });
-    
-    doc.setFillColor(15, 23, 42);
-    doc.rect(0, 280, 210, 17, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(10);
-    doc.text('Verifitech - Trust Simplified', 105, 290, { align: 'center' });
-    
-    doc.save(`ROI_Report_${(leadData.company || 'Company').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
-}
+        function editStep1() {
+            document.getElementById('step1Card').classList.add('active');
+            document.getElementById('step1Card').classList.remove('completed');
+            document.getElementById('step1Content').style.display = 'block';
+            document.getElementById('step1Summary').style.display = 'none';
+            
+            const s2 = document.getElementById('step2Card');
+            s2.style.opacity = '0.6';
+            s2.style.pointerEvents = 'none';
+            s2.classList.remove('active');
+            
+            document.getElementById('resultsSection').classList.remove('show');
+        }
 
-function showResults() {
-    const r = calculationResults;
-    
-    document.getElementById('step1Card').classList.remove('active');
-    document.getElementById('step1Card').classList.add('completed');
-    document.getElementById('step1Content').style.display = 'none';
-    document.getElementById('step1Summary').style.display = 'block';
-    
-    document.getElementById('summaryHires').textContent = r.annualHires.toLocaleString();
-    document.getElementById('summaryCost').textContent = formatCurrency(r.costPerHire);
-    document.getElementById('summaryBadRate').textContent = r.badHireRate + '%';
-    document.getElementById('summaryScreening').textContent = formatCurrency(r.screeningCost);
-    
-    const s2 = document.getElementById('step2Card');
-    s2.style.opacity = '1';
-    s2.style.pointerEvents = 'auto';
-    s2.classList.add('active');
-    
-    document.getElementById('totalSavings').textContent = formatCurrency(r.totalSavings);
-    document.getElementById('roiPercentage').textContent = r.roiPercentage + '% ROI';
-    document.getElementById('badHiresPrevented').textContent = r.badHiresPrevented;
-    document.getElementById('costAvoided').textContent = formatCurrency(r.costAvoided);
-    document.getElementById('timeSaved').textContent = r.timeSaved.toLocaleString() + ' hrs';
-    document.getElementById('currentBadHireCost').textContent = formatCurrency(r.currentBadHireCost);
-    document.getElementById('screeningInvestment').textContent = formatCurrency(r.screeningInvestment);
-    document.getElementById('netSavings').textContent = formatCurrency(r.netSavings);
-    
-    document.getElementById('resultsSection').classList.add('show');
-    
-    setTimeout(() => s2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
-}
-
-function editStep1() {
-    document.getElementById('step1Card').classList.add('active');
-    document.getElementById('step1Card').classList.remove('completed');
-    document.getElementById('step1Content').style.display = 'block';
-    document.getElementById('step1Summary').style.display = 'none';
-    
-    const s2 = document.getElementById('step2Card');
-    s2.style.opacity = '0.6';
-    s2.style.pointerEvents = 'none';
-    s2.classList.remove('active');
-    
-    document.getElementById('resultsSection').classList.remove('show');
-}
-
-// Expose functions
-window.setCurrency = setCurrency;
-window.updateSlider = updateSlider;
-window.updateInput = updateInput;
-window.openLeadModal = openLeadModal;
-window.submitLead = submitLead;
-window.editStep1 = editStep1;
-window.downloadPDF = downloadPDF;
+        // Expose functions to global scope
+        window.setCurrency = setCurrency;
+        window.updateSlider = updateSlider;
+        window.updateInput = updateInput;
+        window.openLeadModal = openLeadModal;
+        window.submitLead = submitLead;
+        window.editStep1 = editStep1;
+        window.downloadPDF = downloadPDF;
     </script>
 </body>
 </html>
