@@ -2036,7 +2036,10 @@
             const step2Data = {
                 step: "roi",
                 timestamp: new Date().toISOString(),
-                email: userEmail,
+                firstName: leadData.firstName,
+                lastName: leadData.lastName,
+                phone: leadData.phone,
+                company: leadData.company,
                 currentBadHires: calculationResults.currentBadHires,
                 badHiresPrevented: calculationResults.badHiresPrevented,
                 currentBadHireCost: calculationResults.currentBadHireCost,
